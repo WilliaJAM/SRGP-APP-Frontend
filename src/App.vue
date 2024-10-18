@@ -1,5 +1,4 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
 import Ejemplo from './components/Ejemplo.vue';
 </script>
 

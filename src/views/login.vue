@@ -1,13 +1,13 @@
 <script>
     
     export default {
-        name: 'Index',
+        name: 'Login',
     }
 
 </script>
 <template>
     <!-- Html -->
-    <h1>Modulo componentes</h1>
+    <h1>Modulo Login</h1>
 </template>
 
 <style>
