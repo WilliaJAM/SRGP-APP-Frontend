@@ -1,9 +1,11 @@
 <script>
 
+
 </script>
 
 <template>
-    <h1>Hola mundo</h1>
+    <h1>Login</h1>
+
 </template>
 
 <style>
