@@ -1,5 +1,7 @@
 <template>
  <el-menu
+    default-active="$route.path"
+    router
     active-text-color="#658EF0"
     background-color="#3C3D3F"
     text-color="#fff"
@@ -9,7 +11,7 @@
     :ellipsis="false"
     @select="handleSelect"
   >
-    <el-menu-item index="0">
+    <el-menu-item index="/">
       <img
         style="width: 100px"
         src=""
@@ -19,13 +21,12 @@
     <el-sub-menu index="2">
       <template #title>
         <div class="avatarUser">
-      <el-avatar src="https://th.bing.com/th/id/R.b26939415212d24e2b91c107511c59ba?rik=ctEzhOycl0eOjw&pid=ImgRaw&r=0" />
+      <el-avatar src="https://th.bing.com/th/id/R.118be2e48987db3e5bb995878bdea6d0?rik=We3ysuTfiZKorQ&pid=ImgRaw&r=0" />
     </div>
         <p>William Johan Artunduaga Marinez</p>
       </template>
       <div class="items">
         <el-menu-item index="2-1">Perfil</el-menu-item>
-      <el-menu-item index="2-3">Ajustes</el-menu-item>
       <el-menu-item index="2-2">Cerrar Sesion</el-menu-item>
       </div>
     </el-sub-menu>

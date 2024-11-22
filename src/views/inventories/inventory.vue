@@ -1,23 +1,31 @@
 <template>
     <LayoutMain>
         <template #slotUno>
-
-          <Forms
-          :titleForm="'Paises'"
-          >
-
-            <template #slotForm>
-              <inventoryForm/>
-            </template>
-          </Forms>
-            <Header
+          <Header
             :title="'Inventario'"
             :titleButton="'Nuevo Elemento'"
-            >
+            :open="openForm"
+            v-show="hideForm"
+            />
+          <Forms
+          :titleForm="'Paises'"
+          v-model:is-open="showForm"
+          v-model:is-close="hideForm"
+          :is-edit="isEdit"
+          >
+            <template #slotForm>
+              <el-row :gutter="20">
+                    <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                <!-- solo es el formulario de country -->
+                <inventoryForm
+                v-model:is-open="showForm"
+                />
+              </el-col>
+            </el-row>
+            </template>
+          </Forms>
 
-
-            </Header>
-            <el-table :data="tableData" style="width: 100%">
+            <el-table :data="tableData" style="width: 100%"   v-show="hideForm">
         <el-table-column prop="stock" label="Disponibilidad" width="180" />
     <el-table-column prop="date" label="Fecha de entrada" width="180" />
     <el-table-column prop="name" label="Nombre del producto" width="180" />
@@ -25,8 +33,8 @@
     <el-table-column prop="address" label="Cantidad" />
     <el-table-column fixed="right" label="Gestion" min-width="120">
       <template #default>
-        <el-button link type="success" :icon="Edit" size="medium" @click="handleClick"></el-button>
-        <el-button link type="danger" :icon="Delete" size="medium" @click="handleClick" ></el-button>
+        <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable"></el-button>
+        <el-button link type="danger" :icon="Delete" size="default" @click="" ></el-button>
       </template>
     </el-table-column>
 
@@ -46,10 +54,40 @@ Edit,
 Delete
 
 } from '@element-plus/icons-vue'
+import { ref } from 'vue';
 
-const handleClick = () => {
-  console.log('true')
+const showForm = ref(false);
+const hideForm = ref(true);
+const formRef = ref()
+
+const isEdit = ref(null);
+
+const openForm = () => {
+    showForm.value = true;
+    hideForm.value = false;
+    isEdit.value = false;
+
+//cambia el valor de la variable resetButton
+    if(resetButton.value == false){
+      resetButton.value = true
+    }
+    
+
 }
+
+const resetButton = ref(true);
+const asd = () => {
+  resetButton.value = false;
+}
+
+
+const editDataTable=  async() => {
+    openForm();
+    asd();
+    isEdit.value = true;
+
+
+};
 
 const tableData = [
   {

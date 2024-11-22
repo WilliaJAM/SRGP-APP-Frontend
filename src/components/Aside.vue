@@ -23,36 +23,33 @@ const handleClose = (key: string, keyPath: string[]) => {
 <template>
   
       <el-menu
+      default-active="$route.path"
+      router
         active-text-color="#658EF0"
         background-color="#3C3D3F"
         class="el-menu-vertical-demo"
-        default-active="2"
         text-color="#fff"
         @open="handleOpen"
         @close="handleClose"
       >
-      <el-menu-item index="3">
-          <el-icon><Shop /></el-icon>
-          <span>Tienda</span>
-        </el-menu-item>
         <el-sub-menu index="1">
           <template #title>
             <el-icon><icon-menu /></el-icon>
             <span>Administracion</span>
           </template>
-          <el-menu-item index="1-2">
+          <el-menu-item index="inventory">
             <el-icon><List/></el-icon>
             Inventario
           </el-menu-item>
-          <el-menu-item index="1-3">
+          <el-menu-item index="supplier">
             <el-icon><UserFilled/></el-icon>
             Proveedores
           </el-menu-item>
-          <el-menu-item index="1-4" >
+          <el-menu-item index="rol" >
             <el-icon><DocumentChecked/></el-icon>
             Roles
           </el-menu-item>
-          <el-menu-item index="1-5" >
+          <el-menu-item index="product" >
             <el-icon><Handbag/></el-icon>
             Productos
           </el-menu-item>
@@ -63,12 +60,13 @@ const handleClose = (key: string, keyPath: string[]) => {
             <span>Gestion</span>
           </template>
           <el-menu-item-group title="Gestion de ubicaciones">
-            <el-menu-item index="2-2">Paises</el-menu-item>
-            <el-menu-item index="2-3">Departamentos</el-menu-item>
-            <el-menu-item index="2-4">Direcciones</el-menu-item>
+            <el-menu-item index="countries">Paises</el-menu-item>
+            <el-menu-item index="deparment">Departamentos</el-menu-item>
+            <el-menu-item index="cities">Ciudades</el-menu-item>
+            <el-menu-item index="address">Direcciones</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group title="Gestion de usuarios">
-            <el-menu-item index="2-5">Personas</el-menu-item>
+            <el-menu-item index="/user">Personas</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
       </el-menu>
@@ -87,10 +85,14 @@ const handleClose = (key: string, keyPath: string[]) => {
     height: 100vh;
     overflow-y: auto; 
   }
-  
+  /* esta regla tiene la clase que contiene todo el aside */
   .el-menu-vertical-demo {
-    height: 100%; 
-    width: 80%;
+    min-height: 100%; 
+    width: 230px;
+  }
+  .routes{
+    text-decoration: none;
+    color: white;
   }
 
 </style>
