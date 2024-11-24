@@ -17,6 +17,7 @@
                 v-model:is-open="showForm"
                 v-model:is-close="hideForm"
                 :is-edit="isEdit"
+                @save="validations"
                 >
             <template #slotForm>
                 <el-row :gutter="20">
@@ -24,6 +25,7 @@
                 <!-- solo es el formulario de country -->
                 <countryForm
                 v-model:is-open="showForm"
+                ref="referenceComponent"
                 />
                     </el-col>
                 </el-row>
@@ -31,13 +33,13 @@
 
                 </Forms>
 
-                <el-table :data="tableData" style="width: 100%" v-show="hideForm">
-                    <el-table-column prop="name" label="Nombre" width="130"/>
-                    <el-table-column prop="code" label="Codigo" width="130"/>
-                    <el-table-column prop="threeCodeLetter" label="Codigo de tres letras" width="180"/>
+                <el-table :data="getDataObject" style="width: 100%" v-show="hideForm">
+                    <el-table-column prop="name" label="Nombre" />
+                    <el-table-column prop="code" label="Codigo" />
+                    <el-table-column prop="three_letter_code" label="Codigo de tres letras" />
                     <el-table-column prop="currency" label="Moneda"/>
-                    <el-table-column prop="phonePrefix" label="Prefijo"/>
-                    <el-table-column fixed="right" label="Operaciones" min-width="120">
+                    <el-table-column prop="telephone_prefix" label="Prefijo"/>
+                    <el-table-column fixed="right" label="Operaciones" >
                         <template #default>
                             <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable"></el-button>
                             <el-button link type="danger" size="default" :icon="Delete"></el-button>
@@ -58,8 +60,9 @@ import {
 Edit,
 Delete
 } from '@element-plus/icons-vue'
-import { ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+import { ElMessage } from 'element-plus'
 
 
 //variables para ocultar y mostrar
@@ -83,30 +86,83 @@ const editDataTable=  async() => {
 
 };
 
+const referenceComponent = ref(null);
 
-const tableData= [
-    {
-        name : 'Colombia' ,
-        code: '40000',
-        threeCodeLetter: 'COL' ,
-        currency: 'COP',
-        phonePrefix: '+57',
-    },
-    {
-        name : 'Colombia' ,
-        code: '40000',
-        threeCodeLetter: 'COL' ,
-        currency: 'COP',
-        phonePrefix: '+57',
-    },
-    {
-        name : 'Colombia' ,
-        code: '40000',
-        threeCodeLetter: 'COL' ,
-        currency: 'COP',
-        phonePrefix: '+57',
-    },
-]
+const validations = async () =>{
+    const validate = await referenceComponent.value.runRules(referenceComponent.value.refForm);
+    
+    if(validate){
+        createCountry()
+    }
+}
+
+
+const createCountry = async ()=>{
+    const data = {
+    name: referenceComponent.value.dataForm.name,
+    code: referenceComponent.value.dataForm.code,
+    three_letter_code: referenceComponent.value.dataForm.threeLetterCode, 
+    currency: referenceComponent.value.dataForm.currency,
+    telephone_prefix: referenceComponent.value.dataForm.telephonePrefix, 
+}
+
+    const url = 'http://127.0.0.1:8000/api/country/save'
+
+    try {
+        axios.post(url, data)
+    .then(function (response) {
+    console.log(response);
+    ElMessage({
+    message: `Se creó el pais`,
+    type: 'success',
+    plain: false,
+  })
+    referenceComponent.value.resetForm()
+    })
+    .catch(function (error) {
+        console.error(error)
+        ElMessage({
+    message: `No se creo el rol ${error}`,
+    type: 'warning',
+    plain: false,
+  })
+    });
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const updateCountry = async () =>{
+
+}
+const deleteCountry = async () =>{
+    
+}
+
+const getDataObject = ref([]);
+
+
+const getCountry = async () =>{
+
+    const url = 'http://127.0.0.1:8000/api/country/get'
+
+     try {
+        axios.get(url)
+    .then(function (response) {
+        getDataObject.value = response.data.result
+        console.log(response)
+    })
+    .catch(function (error) {
+        console.error(error)
+    });
+    }catch(error){
+        console.error(error)
+    }
+}
+
+onMounted(() =>{
+    getCountry()
+})
 
 
 </script>

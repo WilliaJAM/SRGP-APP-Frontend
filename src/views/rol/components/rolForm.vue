@@ -25,13 +25,13 @@
 import { reactive, ref } from 'vue'
 
 
-
 const formSize = ref('large')//tamaño del formulario
 const formRef = ref() //variable que almacena todas la variables del form
 const dataForm = reactive({
   name: '',
   
 }) //almacena el valor ingresado y se guardar en el :model 
+
 
 
 const rulesValidation = reactive({
@@ -64,6 +64,8 @@ const validateForm = async (formularyRef) => {
 const clearFormInputs= () =>{
   formRef.value.resetFields()
 }
+
+
 
 defineExpose({dataForm, formRef,validateForm, clearFormInputs});
 </script>

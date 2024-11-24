@@ -29,11 +29,6 @@ open:{
   type: Function,
   required: true
 },
-
-  
-
-
-
 })
 
 </script>
