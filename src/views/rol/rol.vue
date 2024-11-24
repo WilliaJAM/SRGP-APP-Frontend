@@ -19,16 +19,13 @@
                 <el-row :gutter="20">
                     <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
                 <!-- solo es el formulario de country -->
-                <rolForm
-                v-model:is-open="showForm"
-                ref="referenceForm" 
-                />
+                <rolForm v-model:is-open="showForm" ref="referenceForm" :array="getDataOfTheMethod"  />
                     </el-col>
                 </el-row>
             </template>
         </Forms>
 
-        <el-table :data="tableData" style="width: 100%" v-show="hideForm">
+        <el-table :data="getDataOfTheMethod" style="width: 100%" v-show="hideForm">
                 <el-table-column prop="id" label="Id" width="100"/>
                 <el-table-column prop="name" label="Nombre" width="700" />
     <el-table-column fixed="right" label="Operaciones" min-width="120">
@@ -139,17 +136,16 @@ const deleteRol = async() =>{
 
 }
 
-const getMethod= ref([
-
-])
+const getDataOfTheMethod= ref([])
 
 const getData = async() =>{
+  
   const url = 'http://127.0.0.1:8000/api/rol/get'
 
   try{
     axios.get(url)
   .then(function (response) {
-    getMethod.value = response.data
+    getMethod.value = response.data.result
     console.log(getMethod);
 
   })
@@ -161,29 +157,12 @@ const getData = async() =>{
   }
 
 }
+
+console.log(getData());
+
 onMounted(()=>{ //ejecuta la funcion apenas se cargue el componente
   getData()
 })
-
-// const tableData = [
-//   {
-//     id: '1',
-//     name: 'Usuario Normal',
-//   },
-//   {
-//     id: '2',
-//     name: 'Administrador',
-//   },
-//   {
-//     id: '3',
-//     name: 'Tecnico',
-//   },
-//   {
-//     id: '4',
-//     name: 'Jefe',
-//   },
-// ]
-
 
 </script>
 
