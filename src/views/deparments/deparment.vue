@@ -10,7 +10,7 @@
             />
 
             <Forms
-            :titleForm = "'Fomulario'"
+            :titleForm = "'Departementos'"
             v-model:is-open = "showForm"
             v-model:is-close="hideForm"
             :isEdit = "isEdit"
