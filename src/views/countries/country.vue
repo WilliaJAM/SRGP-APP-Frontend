@@ -18,6 +18,7 @@
                 v-model:is-close="hideForm"
                 :is-edit="isEdit"
                 @save="validations"
+                @update=""
                 >
             <template #slotForm>
                 <el-row :gutter="20">
@@ -26,6 +27,7 @@
                 <countryForm
                 v-model:is-open="showForm"
                 ref="referenceComponent"
+                :dataValue="getData"
                 />
                     </el-col>
                 </el-row>
@@ -40,9 +42,9 @@
                     <el-table-column prop="currency" label="Moneda"/>
                     <el-table-column prop="telephone_prefix" label="Prefijo"/>
                     <el-table-column fixed="right" label="Operaciones" >
-                        <template #default>
-                            <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable"></el-button>
-                            <el-button link type="danger" size="default" :icon="Delete"></el-button>
+                        <template #default="tableData">
+                            <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable(tableData.row.id)"></el-button>
+                            <el-button link type="danger" size="default" :icon="Delete" @click="deleteCountry(tableData.row.id)"></el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -62,8 +64,7 @@ Delete
 } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { ElMessage } from 'element-plus'
-
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 //variables para ocultar y mostrar
 const showForm = ref(false);
@@ -72,6 +73,8 @@ const hideForm = ref(true);
 //variable que cambia el nombre del boton
 const isEdit = ref(null);
 
+const getData = ref([])
+
 //cambia el valor para que se meustre 
 const openForm = () => {
     showForm.value = true;
@@ -79,10 +82,11 @@ const openForm = () => {
     isEdit.value = false;
 }
 //aqui ejecuta la funcion de openForm y cambia el valor de la variable
-const editDataTable=  async() => {
+const editDataTable=  async(id) => {
     openForm();
+    getCountryById(id)
     isEdit.value = true;
-
+//1.54.00
 
 };
 
@@ -96,7 +100,7 @@ const validations = async () =>{
     }
 }
 
-
+//crea el registro 
 const createCountry = async ()=>{
     const data = {
     name: referenceComponent.value.dataForm.name,
@@ -112,21 +116,31 @@ const createCountry = async ()=>{
         axios.post(url, data)
     .then(function (response) {
     console.log(response);
-    ElMessage({
-    message: `Se creó el pais`,
-    type: 'success',
-    plain: false,
-  })
     referenceComponent.value.resetForm()
     })
     .catch(function (error) {
-        console.error(error)
-        ElMessage({
-    message: `No se creo el rol ${error}`,
-    type: 'warning',
-    plain: false,
-  })
+    console.error(error)
+    ElMessage({
+        message: `No se creo el rol ${error}`,
+        type: 'warning',
+        plain: false,
+    })
     });
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const getCountryById = async (id)=>{
+    try{
+        axios.get(url, {data:{id}})
+    .then(function(response){
+        console.log(response);
+    })
+
+    .catch(function(error){
+        console.error(error)
+    })
     }catch(error){
         console.error(error)
     }
@@ -135,10 +149,47 @@ const createCountry = async ()=>{
 const updateCountry = async () =>{
 
 }
-const deleteCountry = async () =>{
-    
+
+//elimina el registro 
+const deleteCountry = async (id) =>{
+    const url = 'http://127.0.0.1:8000/api/country/delete'
+
+    ElMessageBox.confirm(
+    'proxy will permanently delete the file. Continue?',
+    'Warning',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+        try{
+            axios.delete(url, {data: {id}})
+        .then(function (response){
+            getCountry() //ejecuta esta funcion para que se actualize la tabla
+            console.log(response);
+        })
+        .catch(function (error){
+            console.error(error)
+        })
+        }catch(error){
+            console.error(error)
+        }
+      ElMessage({
+        type: 'success',
+        message: 'Se elimino satisfactoriamente',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Delete canceled',
+      })
+    })
 }
 
+//tae ek registro el registro 
 const getDataObject = ref([]);
 
 
@@ -146,10 +197,10 @@ const getCountry = async () =>{
 
     const url = 'http://127.0.0.1:8000/api/country/get'
 
-     try {
+    try {
         axios.get(url)
     .then(function (response) {
-        getDataObject.value = response.data.result
+        getDataObject.value = response.data.result //accedar a los resultados del get
         console.log(response)
     })
     .catch(function (error) {
@@ -160,7 +211,7 @@ const getCountry = async () =>{
     }
 }
 
-onMounted(() =>{
+onMounted(() =>{ //carga los datos al iniciar
     getCountry()
 })
 

@@ -36,7 +36,7 @@ const props = defineProps({
 const isVisible = computed(() =>props.isOpen);
 
 
-const $emit = defineEmits(['update:is-open', 'update:is-close', 'save', 'update']);
+const $emit = defineEmits(['update:is-open', 'update:is-close', 'save', 'update']); //emite el evento
 
 const goBack = () => {
     $emit('update:is-open', false);

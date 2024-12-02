@@ -25,10 +25,10 @@
             </template>
         </Forms>
 
-        <el-table :data="getDataOfTheMethod" style="width: 100%" v-show="hideForm">
+        <el-table :data="getDataRol" style="width: 100%" v-show="hideForm">
                 <el-table-column prop="id" label="Id" width="100"/>
-                <el-table-column prop="name" label="Nombre" width="700" />
-    <el-table-column fixed="right" label="Operaciones" min-width="120">
+                <el-table-column prop="name" label="Nombre" />
+    <el-table-column fixed="right" label="Operaciones">
         <template #default>
         <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable">
         </el-button>
@@ -107,6 +107,7 @@ const createRol = async() =>{
     axios.post(url, data)
   .then(function (response) {
     console.log(response);
+    getData()
     referenceForm.value.clearFormInputs()
     ElMessage({
     message: 'El rol se creo correctamente',
@@ -136,7 +137,7 @@ const deleteRol = async() =>{
 
 }
 
-const getDataOfTheMethod= ref([])
+const getDataRol= ref([])
 
 const getData = async() =>{
   
@@ -145,7 +146,7 @@ const getData = async() =>{
   try{
     axios.get(url)
   .then(function (response) {
-    getMethod.value = response.data.result
+    getDataRol.value = response.data.result
     console.log(getMethod);
 
   })

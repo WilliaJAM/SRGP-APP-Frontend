@@ -36,6 +36,14 @@
 <script setup>
 import { ref, reactive } from 'vue';
 
+
+const props = defineProps({
+  array:{
+    type:Array,
+    required: true,
+    dataValue: Object
+  }
+})
 const formSize = ref('large')
 const refForm = ref()
 const dataForm = reactive({

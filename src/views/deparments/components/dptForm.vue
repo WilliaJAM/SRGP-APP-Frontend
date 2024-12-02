@@ -18,14 +18,16 @@
                 <el-form-item label="Codigo" prop="code">
                     <el-input v-model="dataForm.code"/>
                 </el-form-item>
-                <el-form-item label="Pais" prop="country">
-                    <el-select v-model="dataForm.country_id" placeholder="Activity zone">
-                        <el-option label="Zone one" value="shanghai" />
-                        <el-option label="Zone two" value="beijing" />
+                <el-form-item label="Seleccione un Pais" prop="country">
+                    <el-select v-model="dataForm.country_id" placeholder="Selecione un pais">
+                        <el-option v-for="items in props.getCountry" 
+                        :key="items.id" 
+                        :label="items.name"
+                        :value="items.id" />
+                        
                     </el-select>
                 </el-form-item>
                 </el-form>
-                <el-button type="success" @click="runRules(referenceForm)">Ejecutar</el-button>
             </el-col>
         </el-row>
     </el-card>
@@ -35,7 +37,7 @@
 import { reactive, ref } from 'vue';
 
 const props = defineProps({
-    array: {
+    getCountry: {
         type: Array,
         required: true
     }
@@ -69,8 +71,19 @@ const rules =reactive({
         }
     ],
     country: [
-        {required: true, message: 'Seleccione un pais', trigger: 'blur'}
+        {
+            validator:(value, rule, callback)=>{
+                if(value == undefined){
+                    callback(new Error('Seleccioen alfog'))
+                }else{
+                    callback()
+                }
+            },
+            trigger:'change'
+
+        }
     ]
+
 }) 
 
 const runRules = async (reference) =>{
@@ -86,6 +99,12 @@ const runRules = async (reference) =>{
     })
 
 }
+
+const clearForm = async () =>{
+    referenceForm.value.resetFields()
+}
+
+defineExpose({dataForm,referenceForm, runRules, clearForm })
 </script>
 <style scoped>
   

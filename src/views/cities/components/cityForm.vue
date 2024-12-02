@@ -19,13 +19,15 @@
                     <el-input v-model="dataForm.code"/>
                 </el-form-item>
                 <el-form-item label="Departemento" prop="department">
-                    <el-select v-model="dataForm.department_id" placeholder="Activity zone">
-                        <el-option label="Zone one" value="shanghai" />
-                        <el-option label="Zone two" value="beijing" />
+                    <el-select v-model="dataForm.department_id" placeholder="Seleccione una ciudad perteneciente al departamento">
+                        <el-option v-for="items in props.array" 
+                        :key="items.id"
+                        :label="items.name"
+                        :value="items.id"
+                        />
                     </el-select>
                 </el-form-item>
                 </el-form>
-                <el-button type="success" @click="runRules(referenceForm)">Ejecutar reglas</el-button>
             </el-col>
         </el-row>
     </el-card>
@@ -68,9 +70,6 @@ const rules =reactive({
             
         }
     ],
-    department: [
-        {required: true, message: 'Seleccione un departamento', trigger: 'blur'}
-    ]
 }) 
 
 const runRules = async (reference) =>{
@@ -86,6 +85,17 @@ const runRules = async (reference) =>{
     })
 
 }
+
+const clearForm = async ()=>{
+    referenceForm.value.resetFields()
+}
+
+defineExpose({
+    clearForm,
+    runRules,
+    dataForm,
+    referenceForm
+})
 </script>
 <style scoped>
   

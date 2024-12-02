@@ -15,12 +15,13 @@
             v-model:is-open ="openForm"
             v-model:is-close = "hideForm"
             :isEdit="isEdit"
+            @save="validations"
             >
                 <template #slotForm>
-                    <cityForm/>
+                    <cityForm ref="referenceF" :array="getDepartment"/>
                 </template>
             </Forms>
-            <el-table :data="tableData" style="width: 100%" v-show="hideForm">
+            <el-table :data="getCity" style="width: 100%" v-show="hideForm">
     <el-table-column prop="name" label="Nombre" />
     <el-table-column prop="code" label="Codigo" />
     <el-table-column prop="department_id" label="Departementos" />
@@ -41,17 +42,19 @@ import LayoutMain from '../../components/LayoutMain.vue';
 import cityForm from './components/cityForm.vue'
 import Forms from '../../components/Forms.vue';
 import Header from '../../components/Header.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import {
 Edit,
 Delete
 } from '@element-plus/icons-vue'
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
 
 const openForm = ref(false);
 const hideForm = ref(true);
 const isEdit = ref(null);
-
+const referenceF = ref(null)
 
 const isVisble = async () =>{
     openForm.value = true
@@ -65,29 +68,93 @@ const editTable =async () =>{
 }
 
 
-const tableData = [
-  {
-    name: '2016-05-03',
-    code: 'Tom',
-    department_id: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    name: '2016-05-02',
-    code: 'Tom',
-    department_id: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    name: '2016-05-04',
-    code: 'Tom',
-    department_id: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    name: '2016-05-01',
-    code: 'Tom',
-    department_id: 'No. 189, Grove St, Los Angeles',
-  },
-]
+const validations = async ()=>{
+  const validate =  await referenceF.value.runRules(referenceF.value.referenceForm)
 
+  if(validate){
+    createCity()
+  }
+}
+
+const createCity = async ()=>{
+  const url = 'http://127.0.0.1:8000/api/city/save'
+
+  const data = {
+    name: referenceF.value.dataForm.name,
+    code: referenceF.value.dataForm.code ,
+    department_id: referenceF.value.dataForm.department_id,
+  }
+
+  try{
+    axios.post(url, data)
+  .then(function (response){
+    referenceF.value.clearForm()
+    getCities()
+    ElMessage({
+      message: `Se creó la ciudad`,
+            type: 'success',
+            plain: false,
+    })
+    console.log(response)
+  })
+
+  .catch(function (error){
+    console.error(error)
+    ElMessage({
+      message: `No se creó la ciudad`,
+            type: 'warning',
+            plain: false,
+    })
+  })
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const getCity = ref([])
+
+const getCities = async ()=>{
+  const url = 'http://127.0.0.1:8000/api/city/get'
+
+  try{
+    axios.get(url)
+    .then(function (response){
+      getCity.value= response.data.result
+      console.log(response);
+    })
+
+    .catch(function (error){
+      console.error(error)
+    })
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const getDepartment = ref([])
+
+const getDpts = async ()=>{
+  const url = 'http://127.0.0.1:8000/api/department/get'
+
+  try{
+    axios.get(url)
+    .then(function (response){
+      getDepartment.value= response.data.result
+      console.log(response);
+    })
+
+    .catch(function (error){
+      console.error(error)
+    })
+  }catch(error){
+    console.error(error)
+  }
+}
+
+onMounted(()=>{
+  getDpts()
+  getCities()
+})
 </script>
 
 <style scoped>

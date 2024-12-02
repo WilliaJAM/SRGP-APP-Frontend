@@ -1,78 +1,112 @@
 <template>
-  <el-form>
-    <el-form-item label="Nombre del Material">
-      <el-input  placeholder="Ingrese el nombre" />
-    </el-form-item>
-    <el-form-item label="Cantidad">
-      <el-input type="Number" />
-    </el-form-item>
-    <el-form-item label="Fecha de entrada">
-      <el-date-picker
-      placeholder="Ingrese fecha"
-      >
-      </el-date-picker>
-    </el-form-item>
-    <el-form-item label="Calibre">
-      <el-select
-      v-model="value"
-      >
-      <el-option
-      v-for="items in options"
-      :key="items.value"
-      :label="items.label"
-      :value="items.value"
-      >
-
-      </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Seleciones proveedor">
-      <el-select>
-        <el-option 
-        v-for="items in suppliers"
-        :name = "items.name"
-        :value="items.value"
-        >
-
-        </el-option>
-      </el-select>
-    </el-form-item>
-  </el-form>
+  <el-card style="max-width: 100%">
+      <el-row>
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+              <el-form
+              ref="referenceForm"
+              :model="dataForm"
+              :rules="rules"
+              class="demo-ruleForm"
+              :size="formZize"
+              status-icon
+              style="width: 90%;"
+              label-width="auto"
+              >
+              <el-form-item label="Nombre del producto" prop="name">
+                  <el-input v-model="dataForm.name"/>
+              </el-form-item>
+              <el-form-item label="Cantidad en Stock" prop="cuantityInStock">
+                  <el-input type="number" v-model="dataForm.cuantityInStock"/>
+              </el-form-item>
+              <el-form-item label="Fecha de salida" prop="departureDate">
+                <el-date-picker
+                type="date" 
+                v-model="dataForm.departureDate"
+                aria-label="Escoge una fecha"
+                placeholder="Escoge una fecha"
+                style="width: 100%;"
+                />
+              </el-form-item>
+              <el-form-item label="Fecha de entrada" prop="dateOfEntry">
+                <el-date-picker
+                v-model="dataForm.dateOfEntry"
+                type="date"
+                aria-label="Escoge una fecha"
+                placeholder="Escoge una fecha"
+                style="width: 100%;"
+                />
+              </el-form-item>
+              <el-form-item label="Proveedor" prop="city">
+                  <el-select v-model="dataForm.supplier_id" placeholder="Activity zone">
+                      <el-option label="Zone one" value="shanghai" />
+                      <el-option label="Zone two" value="beijing" />
+                  </el-select>
+              </el-form-item>
+              </el-form>
+          </el-col>
+      </el-row>
+  </el-card>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue';
 
+const props = defineProps({
+  array: {
+      type: Array,
+      required: true,
+    },
+    dataValue: Object
+})
+const formZize = ref('default')
+const referenceForm = ref()
+const dataForm = reactive({
+  name: '',
+  cuantityInStock: '',
+  departureDate: '',
+  dateOfEntry: '',
+  supplier_id: ''
 
-const value = ref('')
+})
 
-const options=[
-{
-  label: '7',
-  value: 7
-},
+const rules =reactive({
+  name:[
+      {required: true, message: 'Ingrese el nombre del barrio ', trigger: 'blur'}
+  ],
+  cuantityInStock: [
+      {required: true, message: 'Ingrese la cantidad', trigger: 'blur'},
 
-]
+],
+  departureDate: [
+      {required: true, message: 'Seleccione la fecha de salida', trigger: 'blur'}
+  ],
+  dateOfEntry: [
+  {required:true, message: 'Seleccione una fecha'}
+  ],
+  supplier_id: [
+    {required:true, message: 'Seleccione el proveedor', trigger: 'change'}
+  ]
+}) 
 
-const suppliers=[
-  {
-    name:  'DistriMeltan',
-    value : 'DistriMeltan'
-  }
-]
+const runRules = async (reference) =>{
+  if(!reference) return false
+  return new Promise ((resolve)=>{
+      reference.validate((valid)=>{
+          if(valid){
+              resolve(true)
+          }else{
+              resolve(false)
+          }
+      })
+  })
 
-
+}
 </script>
-
 <style scoped>
-  .el-form{
-    background-color: gray;
-    border-radius: 8px;
-    width: 890px ;
-text-align: left;
 
-    margin-bottom: 20px;
-    padding: 20px;
-  }
+.el-form-item{
+margin-bottom: 30px;
+transform: translate(50px);
 
+}
 </style>
