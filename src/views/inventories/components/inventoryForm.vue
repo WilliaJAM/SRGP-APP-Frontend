@@ -37,9 +37,12 @@
                 />
               </el-form-item>
               <el-form-item label="Proveedor" prop="city">
-                  <el-select v-model="dataForm.supplier_id" placeholder="Activity zone">
-                      <el-option label="Zone one" value="shanghai" />
-                      <el-option label="Zone two" value="beijing" />
+                  <el-select v-model="dataForm.supplier_id" placeholder="Selecciona un proveedor ">
+                      <el-option v-for="item in props.array"
+                      :key="item.id"
+                      :label="item.supplier_name"
+                      :value="item.id"
+                      />
                   </el-select>
               </el-form-item>
               </el-form>
@@ -101,6 +104,12 @@ const runRules = async (reference) =>{
   })
 
 }
+
+const clearForm = async ()=>{
+  referenceForm.value.resetFields()
+}
+
+defineExpose({referenceForm,dataForm, runRules, clearForm})
 </script>
 <style scoped>
 

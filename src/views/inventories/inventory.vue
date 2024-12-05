@@ -12,6 +12,7 @@
           v-model:is-open="showForm"
           v-model:is-close="hideForm"
           :is-edit="isEdit"
+          @save="createInventory"
           >
             <template #slotForm>
               <el-row :gutter="20">
@@ -20,6 +21,8 @@
                 <inventoryForm
                 v-model:is-open="showForm"
                 :dataValue="getData"
+                :array="getSupplier"
+                ref="referenceF"
                 />
               </el-col>
             </el-row>
@@ -33,8 +36,8 @@
               <el-table-column prop="departureDate" label="Fecha de salida"/>
               <el-table-column prop="supplierName" label="Proveedor"/>
               <el-table-column fixed="right" label="Operaciones">
-      <template #default="dataInfo">
-        <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable(tableData.row.id)"></el-button>
+      <template #default>
+        <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable()"></el-button>
         <el-button link type="danger" :icon="Delete" size="default" @click="deleteInventory" ></el-button>
       </template>
     </el-table-column>
@@ -55,14 +58,14 @@ Edit,
 Delete
 
 } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios';
 
 
 const showForm = ref(false);
 const hideForm = ref(true);
-const formRef = ref()
+const referenceF = ref(null)
 
 const getData = ref([])
 
@@ -84,16 +87,61 @@ const editDataTable=  async(id) => {
 
 };
 
+const validate = async ()=>{
+  const validations = await referenceF.value.runRules(referenceF.value.referenceForm)
+
+  if(validations){
+    createInventory()
+  }
+}
+
 const createInventory = async () =>{
+  const url = 'http://127.0.0.1:8000/api/invetory/save'
+
+  const data = {
+    name:referenceF.value.dataForm.name,
+    quantity_in_stock:referenceF.value.dataForm.cuantityInStock,
+    departure_date:referenceF.value.dataForm.departureDate,
+    date_of_entry:referenceF.value.dataForm.dateOfEntry,
+    supplier_id:referenceF.value.dataForm.supplier_id,
+  }
+  
+  axios.post(url, data)
+  .then(function(response){
+    referenceF.value.clearForm()
+    ElMessage({
+        message: `Se creo el item del inventario`,
+        type: 'success',
+        plain: false,
+    })
+    console.log(response);
+  })
+
+  .catch(function(error){
+    ElMessage({
+        message: `No se creo el item del inventario ${error}`,
+        type: 'warning',
+        plain: false,
+    })
+    console.error(error)
+  })
 
 }
+
+const getIventory = ref([])
+
+const getIventoryMethod = async()=>{
+// const url = ''
+
+}
+
 //actualiza y edita la informacion
 const updateInventory = async () =>{
   
 }
 
 const getInventoryById = async (id) =>{
-  const url = 'asd'
+  // const url = ''
 
   try{
     axios.get(url, {data: {id}}) //obtiene los datos por id
@@ -154,60 +202,25 @@ const windowConfirm = async () =>{
   
 }
 
-const getInventory = async () =>{
-  
+
+
+const getSupplier= ref([])
+
+const getSupplierMethod = async ()=>{
+  const url= 'http://127.0.0.1:8000/api/supplier/get'
+  axios.get(url)
+  .then(function(response){
+    getSupplier.value = response.data.result
+    console.log(response);
+  })
+.catch(function(error){
+    console.error(error)
+  })
 }
-const tableData = [
-  {
-    stock: 'Disponible',
-    date: '2016-05-03',
-    name: 'Perfil 3/4',
-    address: '100',
-  },
-  {
-    stock: 'Disponible',
-    date: '2016-05-03',
-    name: 'Angulo de pulgada',
-    address: '10',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  {
-    stock: 'Agotado',
-    date: '2016-05-03',
-    name: 'Barilla 11mm',
-    address: '0',
-  },
-  
-]
+
+onMounted(()=>{
+  getSupplierMethod()
+})
 </script>
 
 <style scoped>

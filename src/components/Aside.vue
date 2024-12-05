@@ -63,7 +63,6 @@ const handleClose = (key: string, keyPath: string[]) => {
             <el-menu-item index="/countries">Paises</el-menu-item>
             <el-menu-item index="/deparment">Departamentos</el-menu-item>
             <el-menu-item index="/cities">Ciudades</el-menu-item>
-            <el-menu-item index="/address">Direcciones</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group title="Gestion de usuarios">
             <el-menu-item index="/user">Usuarios</el-menu-item>

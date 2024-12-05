@@ -12,33 +12,38 @@
                 style="width: 90%;"
                 label-width="auto"
                 >
-                <el-form-item label="Nombre del barrio" prop="name">
-                    <el-input v-model="dataForm.name"/>
+                <el-form-item label="Nombre del proveedor" prop="supplier_name">
+                    <el-input v-model="dataForm.supplier_name"/>
                 </el-form-item>
                 <el-form-item label="Email" prop="email">
                     <el-input v-model="dataForm.email"/>
                 </el-form-item>
-                
-                <el-form-item label="Producto del proveedor" prop="product">
-                    <el-select v-model="dataForm.supplierProduct_id" placeholder="Activity zone">
-                        <el-option label="Zone one" value="shanghai" />
-                        <el-option label="Zone two" value="beijing" />
+                <el-form-item label="Numero telefonico" prop="phone">
+                    <el-input v-model="dataForm.phone" placeholder="Ingrese numerico telefonico"/>
+                </el-form-item>
+                <el-form-item label="Tipo de telefono" prop="type_phone">
+                    <el-select v-model="dataForm.type_phone" placeholder="Selecciona un tipo">
+                        <el-option v-for="item in typePhone"
+                        :key="item.id"
+                        :label="item.label"
+                        :value="item.value"
+                        />
+                        
                     </el-select>
+                </el-form-item>
+                <el-form-item label="Ciudad" prop="city_id">
+                <el-select v-model="dataForm.city_id" placeholder="Selecciona una ciudad">
+                <el-option v-for="item in props.array"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                />
+                </el-select>
                 </el-form-item>
                 <el-form-item label="Dirreción" prop="address">
-                    <el-select v-model="dataForm.address_id" placeholder="Activity zone">
-                        <el-option label="Zone one" value="shanghai" />
-                        <el-option label="Zone two" value="beijing" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="Numero telefonico" prop="phone_id">
-                    <el-select v-model="dataForm.phone_id" placeholder="Activity zone">
-                        <el-option label="Zone one" value="shanghai" />
-                        <el-option label="Zone two" value="beijing" />
-                    </el-select>
+                    <el-input v-model="dataForm.address" placeholder="Ingrese una direccion"/>
                 </el-form-item>
                 </el-form>
-                <el-button type="success" @click="runRules(referenceForm)">Ejecutar reglas</el-button>
             </el-col>
         </el-row>
     </el-card>
@@ -56,16 +61,22 @@ const props = defineProps({
 const formZize = ref('default')
 const referenceForm = ref()
 const dataForm = reactive({
-    name: '',
+    supplier_name: '',
     email: '',
-    supplierProduct_id: '',
-    address_id: '',
-    phone_id: ''
+    phone: '',
+    type_phone: '',
+    address: '',
+    city_id: ''
 
 })
 
+const typePhone = [
+    {id: 1 , label: 'Personal',value:'Personal'},
+    {id: 2 , label: 'Empresarial',value:'Empresarial'}
+]
+
 const rules =reactive({
-    name:[
+    supplier_name:[
         {required: true, message: 'Ingrese el nombre del barrio ', trigger: 'blur'}
     ],
     address: [
@@ -74,11 +85,15 @@ const rules =reactive({
     email: [
         {type: 'email', message: 'Ingrese un correo electonico valido', trigger: 'blur'},
     ],
-    product:[
-        {required: true, message: 'Selecione un producto', trigger: 'change'}
+    type_phone:[
+        {required: true, message: 'Selecione un tipo', trigger: 'change'}
     ],
-    phone_id: [
-        {required: true, message: 'Seleccione un numero telefonico', trigger: 'change'}
+    phone: [
+        {required: true, message: 'Ingrese un numero telefonico', trigger: 'change'},
+        {min: 10 , max: 10 , message: 'Debe contener 10 digitos', trigger: 'blur'}
+    ],
+    city_id:[
+        {required: true, message: 'Selecciona una ciudad', trigger: 'blur'}
     ]
 }) 
 
@@ -95,6 +110,12 @@ const runRules = async (reference) =>{
     })
 
 }
+
+const clearForm = async()=>{
+    referenceForm.value.resetFields()
+}
+
+defineExpose({clearForm, runRules,dataForm,referenceForm })
 </script>
 <style scoped>
   

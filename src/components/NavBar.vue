@@ -20,9 +20,6 @@
     </el-menu-item>
     <el-sub-menu index="2">
       <template #title>
-        <div class="avatarUser">
-      <el-avatar src="https://th.bing.com/th/id/R.118be2e48987db3e5bb995878bdea6d0?rik=We3ysuTfiZKorQ&pid=ImgRaw&r=0" />
-    </div>
         <p>William Johan Artunduaga Marinez</p>
       </template>
       <div class="items">

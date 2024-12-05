@@ -147,8 +147,6 @@ const getData = async() =>{
     axios.get(url)
   .then(function (response) {
     getDataRol.value = response.data.result
-    console.log(getMethod);
-
   })
   .catch(function (error) {
     console.error(error);

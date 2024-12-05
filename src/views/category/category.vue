@@ -13,13 +13,15 @@
             v-model:is-open="openForm"
             v-model:is-close="hideContent"
             :isEdit="isEdit"
+            @save="validations"
             >
                 <template #slotForm>
-                    <categoryForm/>
+                    <categoryForm ref="referenceF"/>
                 </template>
             </Forms>
 
-            <el-table :data="tableData" style="width: 100%" v-show="hideContent">
+            <el-table :data="objectCategory" style="width: 100%" v-show="hideContent">
+                <el-table-column prop="id" label="Id" />
                 <el-table-column prop="name" label="Nombre" />
                 <el-table-column fixed="right" label="Operaciones">
                     <template #default>
@@ -35,6 +37,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import Forms from '../../components/Forms.vue';
 import Header from '../../components/Header.vue';
 import LayoutMain from '../../components/LayoutMain.vue';
@@ -43,7 +46,8 @@ import {
 Edit,
 Delete
 } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const tableData = [
     {name: 'Hola XD'}
@@ -52,7 +56,7 @@ const tableData = [
 const openForm = ref(false)
 const hideContent = ref(true)
 const isEdit= ref(null)
-
+const referenceF = ref(null)
 const showForm = async () =>{
     openForm.value = true
     hideContent.value = false
@@ -64,6 +68,67 @@ const editTable = async () =>{
     isEdit.value = true
 }
 
+const validations = async ()=>{
+    const validate = await referenceF.value.runRules(referenceF.value.formRef)
+
+    if(validate){
+        createCategory()
+    }
+}
+
+const createCategory = async ()=>{
+    const url = 'http://127.0.0.1:8000/api/category/save'
+
+    const data = {
+        name: referenceF.value.dataForm.name
+    }
+    try{
+        axios.post(url, data)
+    .then(function (response){
+        getCategory()
+        referenceF.value.clearFileds()
+        ElMessage({
+    message: `Se creó la categoria`,
+            type: 'success',
+            plain: false,
+    })
+        console.log(response)
+    })
+    .catch(function(error){
+        ElMessage({
+    message: `No see creó la categoria`,
+            type: 'warning',
+            plain: false,
+    })
+        console.error(error)
+    })
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const objectCategory = ref([])
+
+const getCategory = async ()=>{
+    const url = 'http://127.0.0.1:8000/api/category/get'
+try{
+    axios.get(url)
+.then(function (response){
+    objectCategory.value = response.data.result
+    console.log(response)
+})
+.catch(function(error){
+    console.error(error)
+})
+}catch(error){
+    console.error(error)
+}
+}
+
+
+onMounted(()=>[
+getCategory()
+])
 </script>
 
 <style scoped>

@@ -34,15 +34,31 @@ const dataForm = reactive({
 const rulesValidation = reactive({ 
     name:[
         {required: true, message: 'Ingresa un nombre de la categoria', trigger: 'blur'},
-        {min: 5, max: 999, message: 'El nombre debe ser minimo de 5 caracteres', trigger: 'blur'} 
+        {min: 4, max: 999, message: 'El nombre debe ser minimo de 5 caracteres', trigger: 'blur'} 
     ]
 })
 
+
+const runRules = async (reference) =>{
+    if(!reference) return false
+    return new Promise ((resolve)=>{
+        reference.validate((valid)=>{
+            if(valid){
+                resolve(true)
+            }else{
+                resolve(false)
+            }
+        })
+    })
+
+}
 
 const clearFileds = async ()=>{
     formRef.value.resetFields()
 }
 
+
+defineExpose({clearFileds, runRules, dataForm,formRef })
 </script>
 
 <style scoped>

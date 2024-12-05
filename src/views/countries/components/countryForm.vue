@@ -59,7 +59,7 @@ const dataForm = reactive({
 const rulesForm = reactive({
   name: [
     { required: true, message: 'Por favor ingrese un nombre', trigger: 'blur' },
-    { min: 5, max: 20, message: 'Ingrese nombre maximo 3 minomo 5', trigger: 'blur' },
+    { min: 4, max: 20, message: 'Ingrese nombre minimo 10 maximo 20', trigger: 'blur' },
   ],
   code: [
     {required: true, message: 'Porfavor llene este campo', trigger: 'blur'},

@@ -116,12 +116,18 @@ const createCountry = async ()=>{
         axios.post(url, data)
     .then(function (response) {
     console.log(response);
+    getCountry()
     referenceComponent.value.resetForm()
+    ElMessage({
+        message: `Se creo el pais satisfactoriamente`,
+        type: 'success',
+        plain: false,
+    })
     })
     .catch(function (error) {
     console.error(error)
     ElMessage({
-        message: `No se creo el rol ${error}`,
+        message: `No se creo el pais ${error}`,
         type: 'warning',
         plain: false,
     })

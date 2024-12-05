@@ -1,13 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import LayoutMain from '../components/LayoutMain.vue';
-import address from '../views/address/address.vue';
 import inventory from '../views/inventories/inventory.vue';
 import countries from '../views/countries/country.vue';
 import cities from '../views/cities/city.vue';
 import category from '../views/category/category.vue';
 import customer from '../views/customer/customer.vue';
 import detailsOfTheSale from '../views/detailOfTheSale/details.vue';
-import phone from '../views/phone/phone.vue';
 import product from '../views/product/product.vue';
 import rol from '../views/rol/rol.vue';
 import sale from '../views/sale/sale.vue';
@@ -22,11 +20,6 @@ const routes = [
         path:'/',
         name: 'LayoutMain',
         component: LayoutMain
-    },
-    {
-        path:'/address',
-        name: 'Address',
-        component: address
     },
     {
         path: '/inventory',
@@ -62,11 +55,6 @@ const routes = [
         path: '/details',
         name: 'Details',
         component: detailsOfTheSale
-    },
-    {
-        path: '/phone',
-        name: 'Phone',
-        component: phone
     },
     {
         path: '/product',
