@@ -236,8 +236,10 @@ const rules =reactive({
                 }else{
                     callback()
                 }
-        }
-        }
+        },
+        trigger: 'blur'
+        },
+        {min: 10, max: 10, message: 'Los numeros telefonicos traen 10 digitos', trigge: 'blur'}
     ],
     neighborhoodName:[
         {required: true, message: 'Ingrese nombre del barrio', trigger: 'blur'}
@@ -267,7 +269,7 @@ const runRules = async (reference) =>{
 }
 
 const clearFields= async ()=>{
-    referenceForm.value.reseFields()
+    referenceForm.value.resetFields()
 }
 
 defineExpose({clearFields, runRules, dataForm, referenceForm})

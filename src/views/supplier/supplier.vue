@@ -29,9 +29,9 @@
                 <el-table-column prop="email" label="Email" />
                 <el-table-column prop="address" label="Direccion" />
                 <el-table-column fixed="right" label="Operaciones">
-      <template #default>
+      <template #default="dataTable">
         <el-button link type="primary" :icon="Edit" size="default" @click="editTable"> </el-button>
-        <el-button link type="danger" :icon="Delete" size="default"></el-button>
+        <el-button link type="danger" :icon="Delete" size="default"@click="deleteSupplier(dataTable.row.id)"></el-button>
       </template>
     </el-table-column>
             </el-table>
@@ -154,10 +154,55 @@ const getCityMethod = async ()=>{
     }
 }
 
+const deleteSupplier = async(id)=> { 
+    const url = 'http://127.0.0.1:8000/api/supplier/delete'
+
+    ElMessageBox.confirm(
+        'Seguro que desea eliminar, esta acción no se puede deshacer?',
+        'Warning',
+{
+  confirmButtonText: 'Continuar',
+  cancelButtonText: 'Cancelar',
+  type: 'warning',
+}
+    )
+
+    .then(()=>{
+        try{
+            axios.delete(url, {data: {id}})
+
+            .then(function(response){
+            getSupplierMethod()
+                console.log(response);
+            })
+
+            .catch(function(error){
+            console.erro(error)
+            })
+        }catch(error){
+            console.erro(error)
+        }
+        ElMessage({
+    type: 'success',
+    message: 'Se elimino satisfactoriamente',
+    })
+    })
+    .catch(() => {
+    ElMessage({
+    type: 'info',
+    message: 'Operación cancelada',
+    })
+})
+}
+
+
+
 onMounted(()=>{
     getCityMethod()
     getSupplierMethod()
 })
+
+
 </script>
 
 <style scoped>

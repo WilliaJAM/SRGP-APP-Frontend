@@ -29,16 +29,16 @@
             </template>
           </Forms>
 
-            <el-table :data="tableData" style="width: 100%"   v-show="hideForm">
-              <el-table-column prop="cuantity" label="Cantidad"/>
+            <el-table :data="getIventory" style="width: 100%"   v-show="hideForm">
               <el-table-column prop="name" label="Nombre del producto"/>
-              <el-table-column prop="dateEntry" label="Fecha de entrada"/>
-              <el-table-column prop="departureDate" label="Fecha de salida"/>
-              <el-table-column prop="supplierName" label="Proveedor"/>
+              <el-table-column prop="quantity_in_stock" label="Cantidad"/>
+              <el-table-column prop="departure_date" label="Fecha de salida"/>
+              <el-table-column prop="date_of_entry" label="Fecha de entrada"/>
+              <el-table-column :formatter="formatSupplierName" label="Proveedor"/>
               <el-table-column fixed="right" label="Operaciones">
-      <template #default>
+      <template #default="dataTable">
         <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable()"></el-button>
-        <el-button link type="danger" :icon="Delete" size="default" @click="deleteInventory" ></el-button>
+        <el-button link type="danger" :icon="Delete" size="default" @click="deleteInventory(dataTable.row.id)" ></el-button>
       </template>
     </el-table-column>
 
@@ -87,6 +87,12 @@ const editDataTable=  async(id) => {
 
 };
 
+const formatSupplierName = (row) => {
+    const supplier = getSupplier.value.find(supplier =>supplier.id === row.supplier_id);
+    return supplier ? supplier.name : 'No asignado'; 
+}
+
+
 const validate = async ()=>{
   const validations = await referenceF.value.runRules(referenceF.value.referenceForm)
 
@@ -108,6 +114,7 @@ const createInventory = async () =>{
   
   axios.post(url, data)
   .then(function(response){
+    getIventoryMethod()
     referenceF.value.clearForm()
     ElMessage({
         message: `Se creo el item del inventario`,
@@ -131,7 +138,22 @@ const createInventory = async () =>{
 const getIventory = ref([])
 
 const getIventoryMethod = async()=>{
-// const url = ''
+const url = 'http://127.0.0.1:8000/api/invetory/get'
+
+try{
+  axios.get(url)
+  .then(function(response){
+    getIventory.value= response.data.result
+  console.log(response);
+  })
+
+  .catch(function(error){
+  console.error(error)
+})
+}catch(error){
+  console.error(error)
+
+}
 
 }
 
@@ -158,9 +180,9 @@ const getInventoryById = async (id) =>{
   }
 }
 //elimina los datos de la tabla por medio del id
-const deleteInventory = async () =>{
+const deleteInventory = async (id) =>{
   
-  const url = 'asd'
+  const url = 'http://127.0.0.1:8000/api/invetory/delete'
 
   ElMessageBox.confirm(
     'Seguro que quiere borralo permanentemente?',
@@ -175,6 +197,7 @@ const deleteInventory = async () =>{
       try{
         axios.delete(url, {data: {id}})
         .then( function(response){
+          getIventoryMethod()
           console.log(response);
         })
 
@@ -198,12 +221,6 @@ const deleteInventory = async () =>{
     })
 }
 
-const windowConfirm = async () =>{
-  
-}
-
-
-
 const getSupplier= ref([])
 
 const getSupplierMethod = async ()=>{
@@ -219,6 +236,7 @@ const getSupplierMethod = async ()=>{
 }
 
 onMounted(()=>{
+  getIventoryMethod()
   getSupplierMethod()
 })
 </script>

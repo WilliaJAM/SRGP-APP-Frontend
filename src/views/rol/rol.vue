@@ -29,10 +29,10 @@
                 <el-table-column prop="id" label="Id" width="100"/>
                 <el-table-column prop="name" label="Nombre" />
     <el-table-column fixed="right" label="Operaciones">
-        <template #default>
+        <template #default="dataTable">
         <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable">
         </el-button>
-        <el-button link type="danger" :icon="Delete" size="default"></el-button>
+        <el-button link type="danger" :icon="Delete" size="default" @click="deleteRol(dataTable.row.id)"></el-button>
     </template>
     </el-table-column>
   </el-table>
@@ -49,7 +49,7 @@ import rolForm from './components/rolForm.vue'
 import {Edit, Delete} from '@element-plus/icons-vue';
 import { onMounted, ref } from 'vue';
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const showForm = ref(false);
 const hideForm = ref(true);
@@ -132,8 +132,45 @@ const updateRol = async() =>{
 
 }
 
-const deleteRol = async() =>{
-  console.log('se elimino el rol');
+const deleteRol = async(id) =>{
+  const url = 'http://127.0.0.1:8000/api/rol/delete'
+
+
+  ElMessageBox.confirm(
+'Seguro que desea eliminar, esta acción no se puede deshacer?',
+'Warning',
+{
+  confirmButtonText: 'Continuar',
+  cancelButtonText: 'Cancelar',
+  type: 'warning',
+}
+)
+.then(() => {
+  try{
+    axios.delete(url, {data: {id}})
+
+    .then(function(response){
+      getData()
+      console.log(response);
+    })
+
+    .catch(function(error){
+    console.error(error)
+    })
+  }catch(error){
+    console.error(error)
+  }
+  ElMessage({
+    type: 'success',
+    message: 'Se elimino satisfactoriamente',
+  })
+})
+.catch(() => {
+  ElMessage({
+    type: 'info',
+    message: 'Operación cancelada',
+  })
+})
 
 }
 

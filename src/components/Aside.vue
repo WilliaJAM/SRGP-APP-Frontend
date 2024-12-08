@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import {
-  Document,
   Menu as IconMenu,
-  Shop,
   SetUp,
   DocumentChecked,
   List,
   UserFilled,
   Handbag,
+  ShoppingCart,
+  Document
 } from '@element-plus/icons-vue'
 
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -52,6 +52,14 @@ const handleClose = (key: string, keyPath: string[]) => {
           <el-menu-item index="/product" >
             <el-icon><Handbag/></el-icon>
             Productos
+          </el-menu-item>
+          <el-menu-item index="/sale" >
+            <el-icon><ShoppingCart/></el-icon>
+            Ventas
+          </el-menu-item>
+          <el-menu-item index="/details" >
+            <el-icon><Document/></el-icon>
+            Detalles ventas
           </el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="2">

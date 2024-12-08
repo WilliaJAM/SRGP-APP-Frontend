@@ -34,15 +34,15 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 
 
 const props = defineProps({
   array:{
     type:Array,
     required: true,
-    dataValue: Object
-  }
+  },
+  dataValue: Object
 })
 const formSize = ref('large')
 const refForm = ref()
@@ -54,8 +54,13 @@ const dataForm = reactive({
   telephonePrefix: '', 
 })
 
-
-
+const putDataInForm = ()=>{
+  dataForm.name = props.dataValue[0].name
+  dataForm.code = props.dataValue[0].code
+  dataForm.threeLetterCode = props.dataValue[0].three_letter_code
+  dataForm.currency = props.dataValue[0].currency
+  dataForm.telephonePrefix = props.dataValue[0].telephone_prefix
+}
 const rulesForm = reactive({
   name: [
     { required: true, message: 'Por favor ingrese un nombre', trigger: 'blur' },
@@ -63,7 +68,16 @@ const rulesForm = reactive({
   ],
   code: [
     {required: true, message: 'Porfavor llene este campo', trigger: 'blur'},
-    {min: 3, max : 3, message: 'Ingrese un codigo de 3 caracteres', trigger: 'blur' }
+    {min: 3, max : 3, message: 'Ingrese un codigo de 3 caracteres', trigger: 'blur' },
+    {
+      validator:(value, rules, callback)=>{
+        if(isNaN(dataForm.code)){
+          callback(new Error('El codigo debe ser 3 numeros'))
+        }else{
+          callback()
+        }
+      }
+    }
   ],
   threeLetterCode: [
     {required: true, message: 'Ingrese el codigo de 3 letras', trigger: 'blur'},
@@ -159,6 +173,13 @@ const runRules = async (ref) => {
 const resetForm = () => {
   refForm.value.resetFields()
 }
+
+watch(
+  ()=>props.dataValue,
+  (newData)=>{
+    putDataInForm()
+  }
+)
 
 defineExpose({dataForm, refForm ,resetForm, runRules})
 </script>

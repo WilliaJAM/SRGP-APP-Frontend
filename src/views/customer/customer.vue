@@ -25,16 +25,16 @@
                     <el-table-column prop="name" label="Nombre" width="140"/>
                     <el-table-column prop="documentType" label="Tipo de documento" width="140"/>
                     <el-table-column prop="identificationNumber" label="N° Identificación" width="140"/>
-                    <el-table-column prop="rol_id" label="Tipo" width="140"/>
+                    <el-table-column :formatter="formatCustomerName" label="Tipo" width="140"/>
                     <el-table-column prop="email" label="Email" width="140"/>
                     <el-table-column prop="phone" label="Telefono" width="140"/>
                     <el-table-column prop="city_id" label="Ciudad" width="140"/>
                     <el-table-column prop="neighborhood_name" label="Barrio" width="140"/>
                     <el-table-column prop="address" label="Direccion" width="140"/>
                     <el-table-column fixed="right" label="Operaciones" width="140">
-                        <template #default>
+                        <template #default="dataTable">
                             <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable()"></el-button>
-                            <el-button link type="danger" size="default" :icon="Delete" @click=""></el-button>
+                            <el-button link type="danger" size="default" :icon="Delete" @click="deleteUser(dataTable.row.id)"></el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -48,7 +48,7 @@ import Forms from '../../components/Forms.vue';
 import customerForm from './components/customerForm.vue'
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
 Edit,
 Delete
@@ -70,6 +70,10 @@ const editTable = async () =>{
     openForm()
 isEdit.value = true
 
+}
+const formatCustomerName = (row) => {
+    const rol = getRol.value.find(rol => rol.id === row.rol_id);
+    return rol ? rol.name : 'No asignado'; 
 }
 
 const validate = async ()=>{
@@ -121,6 +125,45 @@ const createCustomer = async ()=>{
     }catch(error){
         console.error(error)
     }
+
+
+}
+
+const deleteUser = async(id)=>{
+    const url = 'http://127.0.0.1:8000/api/customer/delete'
+
+    ElMessageBox.confirm(
+        'Seguro que desea eliminar, esta acción no se puede deshacer?',
+'Warning',
+{
+  confirmButtonText: 'Continuar',
+  cancelButtonText: 'Cancelar',
+  type: 'warning',
+}
+)
+.then(()=>{
+    try{
+        axios.delete(url, {data:{id}})
+        
+        .then(function(response){
+            getCustomerMethod()
+            console.log(response)
+        })
+    }catch(error){
+        console.error(error)
+    }
+    ElMessage({
+    type: 'success',
+    message: 'Se elimino satisfactoriamente',
+    })
+})
+
+.catch(() => {
+    ElMessage({
+    type: 'info',
+    message: 'Operación cancelada',
+    })
+})
 }
 
 const getCustomer = ref([])

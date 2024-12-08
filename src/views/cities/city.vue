@@ -24,11 +24,11 @@
             <el-table :data="getCity" style="width: 100%" v-show="hideForm">
     <el-table-column prop="name" label="Nombre" />
     <el-table-column prop="code" label="Codigo" />
-    <el-table-column prop="department_id" label="Departementos" />
+    <el-table-column :formatter="formatDptName" label="Departementos" />
     <el-table-column fixed="right" label="Operaciones">
-      <template #default>
+      <template #default="tableData">
         <el-button link type="primary" :icon="Edit" size="default" @click="editTable"> </el-button>
-        <el-button link type="danger" :icon="Delete" size="default"></el-button>
+        <el-button link type="danger" :icon="Delete" size="default" @click="deleteCity(tableData.row.id)"></el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -48,7 +48,7 @@ Edit,
 Delete
 } from '@element-plus/icons-vue'
 import axios from 'axios';
-import { ElMessage } from 'element-plus';
+import { ElMessage, formatter,ElMessageBox } from 'element-plus';
 
 
 const openForm = ref(false);
@@ -74,6 +74,11 @@ const validations = async ()=>{
   if(validate){
     createCity()
   }
+}
+
+const formatDptName = (row) => {
+    const country = getDepartment.value.find(dpts => dpts.id === row.department_id);
+    return country ? country.name : 'No asignado'; 
 }
 
 const createCity = async ()=>{
@@ -149,6 +154,45 @@ const getDpts = async ()=>{
   }catch(error){
     console.error(error)
   }
+}
+
+const deleteCity = async (id)=>{
+  const url = 'http://127.0.0.1:8000/api/city/delete'
+
+  ElMessageBox.confirm(
+    'Seguro que desea eliminar, esta acción no se puede deshacer',
+    'Warning',
+    {
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
+      type: 'error',
+    }
+  )
+    .then(() => {
+      try{
+        axios.delete(url, {data: {id}})
+      .then(function(response){
+        getCities()
+        console.log(response);
+      })
+
+      .catch(function(error){
+        console.error(error)
+      })
+      }catch(error){
+        console.error(error)
+      }
+      ElMessage({
+        type: 'success',
+        message: 'Eliminado satisfactoriamente',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Operación cancelada',
+      })
+    })
 }
 
 onMounted(()=>{

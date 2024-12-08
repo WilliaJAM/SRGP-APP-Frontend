@@ -73,7 +73,7 @@ const hideForm = ref(true);
 //variable que cambia el nombre del boton
 const isEdit = ref(null);
 
-const getData = ref([])
+const getData = ref()
 
 //cambia el valor para que se meustre 
 const openForm = () => {
@@ -84,7 +84,7 @@ const openForm = () => {
 //aqui ejecuta la funcion de openForm y cambia el valor de la variable
 const editDataTable=  async(id) => {
     openForm();
-    getCountryById(id)
+    getData.value =  await getCountryById(id)
     isEdit.value = true;
 //1.54.00
 
@@ -97,6 +97,14 @@ const validations = async () =>{
     
     if(validate){
         createCountry()
+    }
+}
+
+const validationsUpdate = async () =>{
+    const validate = await referenceComponent.value.runRules(referenceComponent.value.refForm);
+    
+    if(validate){
+        
     }
 }
 
@@ -138,22 +146,44 @@ const createCountry = async ()=>{
 }
 
 const getCountryById = async (id)=>{
-    try{
-        axios.get(url, {data:{id}})
-    .then(function(response){
-        console.log(response);
-    })
 
-    .catch(function(error){
-        console.error(error)
-    })
+    const url = 'http://127.0.0.1:8000/api/country/getDataById'
+
+    try{
+        const response = axios.get(url, {params:{id: id}})
+        
+        return (await response).data.result 
+
     }catch(error){
         console.error(error)
     }
 }
 
 const updateCountry = async () =>{
+    const url = 'http://127.0.0.1:8000/api/country/update'
 
+    const updateInfo = {
+    id: getData.value[0].id,
+    name: getData.value.name,
+    three_letter_code: getData.value.three_letter_code,
+    currency: getData.value.currency,
+    telephone_prefix: getData.value.telephone_prefix,
+    
+}
+    try{
+    axios.put(url, updateInfo)
+
+    .then(function(response){
+        console.log(response);
+    })
+    //coy aqi
+    .catch(function(error){
+    console.error(error)
+    }
+    )
+    }catch(error){
+    console.error(error)
+    }
 }
 
 //elimina el registro 
@@ -161,11 +191,11 @@ const deleteCountry = async (id) =>{
     const url = 'http://127.0.0.1:8000/api/country/delete'
 
     ElMessageBox.confirm(
-    'proxy will permanently delete the file. Continue?',
+    'Seguro que desea eliminar?',
     'Warning',
     {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
       type: 'warning',
     }
   )
@@ -190,12 +220,12 @@ const deleteCountry = async (id) =>{
     .catch(() => {
       ElMessage({
         type: 'info',
-        message: 'Delete canceled',
+        message: 'Operación cancelada',
       })
     })
 }
 
-//tae ek registro el registro 
+//tae el registro el registro 
 const getDataObject = ref([]);
 
 

@@ -29,12 +29,12 @@
                 <el-table-column prop="gender" label="Genero" />
                 <el-table-column prop="registration_date" label="Fecha de registro" />
                 <el-table-column prop="phone" label="Telefono" />
-                <el-table-column prop="rol_id" label="Rol" />
+                <el-table-column :formatter="formatRolName" label="Rol" />
                 <el-table-column prop="email" label="Email" />
                 <el-table-column fixed="right" label="Operaciones" >
-                        <template #default>
+                        <template #default="dataTable">
                             <el-button link type="primary" size="default" :icon="Edit" @click="editTable()"></el-button>
-                            <el-button link type="danger" size="default" :icon="Delete" @click=""></el-button>
+                            <el-button link type="danger" size="default" :icon="Delete" @click="deleteUser(dataTable.row.id)"></el-button>
                         </template>
                     </el-table-column>
             </el-table>
@@ -53,6 +53,7 @@ Edit,
 Delete
 } from '@element-plus/icons-vue'
 import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const showForm = ref(false)
 const hideContent = ref(true)
@@ -70,6 +71,11 @@ const editTable = async ()=>{
     isEdit.value = false
 }
 
+const formatRolName = (row) => {
+
+    const rol = getRolArray.value.find(rol => rol.id === row.rol_id);
+    return rol ? rol.name : 'No asignado'; 
+}
 
 const validations = async ()=>{
     const validateForm = await referenceF.value.runRules(referenceF.value.referenceForm)
@@ -105,10 +111,21 @@ const createUser = async ()=>{
     try{
         axios.post(url, data)
     .then(function(response){
-        referenceF.value.resetFields()
+        ElMessage({
+            message: `Se creó el usuario`,
+            type: 'success',
+            plain: false,
+    })
+        getUserFunction()
+        referenceF.value.clearFields()
         console.log(response)
     })
     .catch(function(error){
+        ElMessage({
+            message: `No se creó el usuario`,
+            type: 'warning',
+            plain: false,
+    })
         console.error(error)
     })
     }catch(error){
@@ -116,6 +133,44 @@ const createUser = async ()=>{
     }
 }
 
+
+const deleteUser = async(id)=>{
+    const url = 'http://127.0.0.1:8000/api/user/delete'
+
+ElMessageBox.confirm(
+'Seguro que desea eliminar, esta acción no se puede deshacer?',
+'Warning',
+{
+  confirmButtonText: 'Continuar',
+  cancelButtonText: 'Cancelar',
+  type: 'warning',
+}
+)
+.then(() => {
+    try{
+        axios.delete(url, {data: {id}})
+    .then(function (response){
+        getUserFunction() 
+        console.log(response);
+    })
+    .catch(function (error){
+        console.error(error)
+    })
+    }catch(error){
+        console.error(error)
+    }
+  ElMessage({
+    type: 'success',
+    message: 'Se elimino satisfactoriamente',
+  })
+})
+.catch(() => {
+  ElMessage({
+    type: 'info',
+    message: 'Operación cancelada',
+  })
+})
+}
 
 
 const getUser = ref([])

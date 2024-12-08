@@ -62,7 +62,7 @@ const rules =reactive({
             validator: (rule, value, callback)=>{
                 
                 if(isNaN(dataForm.code)){
-                    callback(new Error ('El codigo debe tener numeros'))
+                    callback(new Error ('No se permiten letras como id'))
                 }else{
                 callback()
             }

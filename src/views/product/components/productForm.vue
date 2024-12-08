@@ -12,23 +12,31 @@
                 style="width: 90%;"
                 label-width="auto"
                 >
-                <el-form-item label="Inventario" prop="inventory">
+                <el-form-item label="Inventario" prop="inventory_id">
                     <el-select v-model="dataForm.inventory_id" placeholder="Seleccione el material del inventario">
-                        <el-option label="Disponible" value="shanghai" />
-                        <el-option label="No disponible" value="beijing" />
+                        <el-option v-for="item in props.inventory"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="Categoria" prop="category">
+                <el-form-item label="Categoria" prop="category_id">
                     <el-select v-model="dataForm.category_id" placeholder="Seleccione la categoria">
-                        <el-option label="Disponible" value="shanghai" />
-                        <el-option label="No disponible" value="beijing" />
+                        <el-option v-for="item in props.category"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        />
                     </el-select>
-                </el-form-item>
-                <el-form-item label="Precio del producto" prop="price">
-                    <el-input v-model="dataForm.price"/>
                 </el-form-item>
                 <el-form-item label="Imagen" prop="image">
                     <el-input v-model="dataForm.image"/>
+                </el-form-item>
+                <el-form-item label="Precio del producto" prop="price">
+                    <el-input v-model="dataForm.price" 
+                    :formatter="(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"/>
                 </el-form-item>
                 <el-form-item label="Descripción" prop="description">
                     <el-input type="textarea" autosize placeholder="Escriba una breve descripción" v-model="dataForm.description"/>
@@ -38,15 +46,17 @@
                 </el-form-item>
                 <el-form-item label="Estado" prop="status">
                     <el-select v-model="dataForm.status" placeholder="Seleccione el estado">
-                        <el-option label="Disponible" value="shanghai" />
-                        <el-option label="No disponible" value="beijing" />
+                        <el-option v-for="item in disponibility"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.name"
+                        />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Id del producto" prop="id_product">
                     <el-input  v-model="dataForm.id_product"/>
                 </el-form-item>
                 </el-form>
-                <el-button type="success" @click="runRules(referenceForm)">Ejecutar reglas</el-button>
             </el-col>
         </el-row>
     </el-card>
@@ -56,7 +66,11 @@
 import { reactive, ref } from 'vue';
 
 const props = defineProps({
-    array: {
+    inventory: {
+        type: Array,
+        required: true
+    },
+    category: {
         type: Array,
         required: true
     }
@@ -75,8 +89,60 @@ const dataForm = reactive({
 
 })
 
+const disponibility = [
+    {id:1 ,name: 'Disponible', value: true},
+    {id:2 ,name: 'No disponible', value: false}
+]
+
 const rules =reactive({
-    
+    price: [
+        {required: true, message: 'Ingrese valor', trigger: 'blur'},
+        {
+            validator:(value, rules, callback)=>{
+
+                if(isNaN(dataForm.price)){
+                    callback(new Error('No se admiten letras'))
+                }else{
+                    callback()
+                }
+
+            },
+            trigger: 'blur'
+        }
+    ],
+    image: [
+        {required: true, message: 'Ingrese imagen', trigger: 'blur'}
+    ],
+    description: [
+        {required: true, message: 'Ingrese una descripción del producto', trigger: 'blur'},
+        {min: 10, max: 999, message: 'La descripción es demasiado corta', trigger: 'blur'}
+    ],
+    dimensions: [
+        {required: true, message: 'Ingrese dimensiones del producto ej: 2cm x 1cm', trigger: 'blur'}
+    ],
+    status: [
+        {required: true, message: 'Por favor seleccionar un estado', trigger: 'blur'}
+    ],
+    id_product: [
+        {required: true, message: 'Ingrese un id ej: 00001, 00002', trigger: 'blur' },
+        {min: 5 , max: 5, message: 'Ingrese un id de 5 digitos', trigger: 'blur'},
+        {
+            validator:(value, rules, callback)=>{
+                if(isNaN(dataForm.id_product)){
+                    callback(new Error('No se permiten letras como id'))
+                }else{
+                    callback()
+                }
+            }
+        }
+    ],
+    category_id: [
+        {required: true, message: 'Por favor seleccionar una categoria', trigger: 'blur'}
+    ],
+    inventory_id: [
+        {required: true, message: 'Por favor seleccionar un item del invetario', trigger: 'blur'}
+        
+    ]
 }) 
 
 const runRules = async (reference) =>{
@@ -92,6 +158,12 @@ const runRules = async (reference) =>{
     })
 
 }
+
+const clearForm = async ()=>{
+    referenceForm.value.resetFields()
+}
+
+defineExpose({clearForm, runRules, dataForm, referenceForm})
 </script>
 <style scoped>
   

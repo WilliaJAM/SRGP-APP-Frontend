@@ -34,7 +34,7 @@ const dataForm = reactive({
 const rulesValidation = reactive({ 
     name:[
         {required: true, message: 'Ingresa un nombre de la categoria', trigger: 'blur'},
-        {min: 4, max: 999, message: 'El nombre debe ser minimo de 5 caracteres', trigger: 'blur'} 
+        {min: 3, max: 999, message: 'El nombre debe ser minimo de 5 caracteres', trigger: 'blur'} 
     ]
 })
 

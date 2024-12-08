@@ -28,11 +28,11 @@
                 <el-table :data="getDepartment" style="width: 100%" v-show="hideForm">
                     <el-table-column prop="name" label="Nombre" />
                     <el-table-column prop="code" label="Codigo"/>
-                    <el-table-column prop="country_id" label="Pais"/>
+                    <el-table-column :formatter="formatCountryName" label="Pais"/>
                     <el-table-column fixed="right" label="Operations">
-                        <template #default>
+                        <template #default="tableData">
                             <el-button link type="primary" :icon="Edit" size="default" @click="editing"></el-button>
-                            <el-button link type="danger" :icon="Delete" size="default" @click="asdasd"></el-button>
+                            <el-button link type="danger" :icon="Delete" size="default" @click="deleteDepartment(tableData.row.id)"></el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -76,6 +76,13 @@ const editing = async () =>{
 const asdasd = ()=> {
     alert('Borrado')
 }
+
+const formatCountryName = (row) => {
+    const country = getCountryObject.value.find(c => c.id === row.country_id);
+    return country ? country.name : 'No asignado'; 
+}
+
+
 
 //validaciones
 const validations = async () =>{
@@ -173,6 +180,44 @@ try {
 }
 } 
 
+
+const deleteDepartment = async(id)=>{
+
+    const url = 'http://127.0.0.1:8000/api/department/delete'
+    ElMessageBox.confirm(
+    'Seguro que desea eliminar?',
+    'Warning',
+    {
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+        try{
+            axios.delete(url, {data: {id}})
+        .then(function (response){
+            getDpt() 
+            console.log(response);
+        })
+        .catch(function (error){
+            console.error(error)
+        })
+        }catch(error){
+            console.error(error)
+        }
+      ElMessage({
+        type: 'success',
+        message: 'Se elimino satisfactoriamente',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Operación cancelada',
+      })
+    })
+}
 onMounted(() =>{
     getCountry()
     getDpt()
