@@ -114,6 +114,10 @@ const getCategory = async ()=>{
 try{
     axios.get(url)
 .then(function (response){
+    ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
     objectCategory.value = response.data.result
     console.log(response)
 })

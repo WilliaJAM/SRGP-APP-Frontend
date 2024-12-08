@@ -143,6 +143,10 @@ const url = 'http://127.0.0.1:8000/api/invetory/get'
 try{
   axios.get(url)
   .then(function(response){
+    ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
     getIventory.value= response.data.result
   console.log(response);
   })

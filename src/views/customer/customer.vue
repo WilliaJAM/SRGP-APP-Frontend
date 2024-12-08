@@ -174,6 +174,10 @@ const getCustomerMethod = async ()=>{
 try{
     axios.get(url)
     .then(function(response){
+        ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
         getCustomer.value = response.data.result
         console.log(response)
     })

@@ -18,7 +18,7 @@
                 v-model:is-close="hideForm"
                 :is-edit="isEdit"
                 @save="validations"
-                @update=""
+                @update="validationsUpdate"
                 >
             <template #slotForm>
                 <el-row :gutter="20">
@@ -104,7 +104,7 @@ const validationsUpdate = async () =>{
     const validate = await referenceComponent.value.runRules(referenceComponent.value.refForm);
     
     if(validate){
-        
+        updateCountry()
     }
 }
 
@@ -164,20 +164,35 @@ const updateCountry = async () =>{
 
     const updateInfo = {
     id: getData.value[0].id,
-    name: getData.value.name,
-    three_letter_code: getData.value.three_letter_code,
-    currency: getData.value.currency,
-    telephone_prefix: getData.value.telephone_prefix,
+    name: referenceComponent.value.dataForm.name,
+    code: referenceComponent.value.dataForm.code,
+    three_letter_code:referenceComponent.value.dataForm.threeLetterCode,
+    currency:referenceComponent.value.dataForm.currency,
+    telephone_prefix: referenceComponent.value.dataForm.telephonePrefix,
     
 }
     try{
     axios.put(url, updateInfo)
 
     .then(function(response){
+        getCountry()
+        referenceComponent.value.resetForm()
+        showForm.value = false
+        hideForm.value = true
+        ElMessage({
+        message: `Se actualizó el pais satisfactoriamente`,
+        type: 'success',
+        plain: false,
+    })
         console.log(response);
     })
-    //coy aqi
+    
     .catch(function(error){
+    ElMessage({
+        message: `No se actualizó el pais`,
+        type: 'warning',
+        plain: false,
+    })
     console.error(error)
     }
     )
@@ -194,9 +209,9 @@ const deleteCountry = async (id) =>{
     'Seguro que desea eliminar?',
     'Warning',
     {
-      confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar',
-      type: 'warning',
+    confirmButtonText: 'Continuar',
+    cancelButtonText: 'Cancelar',
+    type: 'warning',
     }
   )
     .then(() => {
@@ -236,6 +251,10 @@ const getCountry = async () =>{
     try {
         axios.get(url)
     .then(function (response) {
+        ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
         getDataObject.value = response.data.result //accedar a los resultados del get
         console.log(response)
     })

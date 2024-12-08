@@ -183,6 +183,10 @@ const getData = async() =>{
   try{
     axios.get(url)
   .then(function (response) {
+    ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
     getDataRol.value = response.data.result
   })
   .catch(function (error) {

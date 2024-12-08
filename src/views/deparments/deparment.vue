@@ -146,6 +146,10 @@ const getDpt = async () =>{
 try{
     axios.get(url)
 .then(function (response){
+    ElMessage({
+            type: 'info',
+            message: "Se cargaron los datos"
+        })
     getDepartment.value = response.data.result
 })
 
