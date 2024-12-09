@@ -12,7 +12,7 @@
           v-model:is-open="showForm"
           v-model:is-close="hideForm"
           :is-edit="isEdit"
-          @save="createInventory"
+          @save="validate"
           @update="validationsForUpdate"
           >
             <template #slotForm>
@@ -89,9 +89,12 @@ const editDataTable=  async(id) => {
 };
 
 const formatSupplierName = (row) => {
-    const supplier = getSupplier.value.find(supplier =>supplier.id === row.supplier_id);
-    return supplier ? supplier.name : 'No asignado'; 
+  const supplier = getSupplier.value.find(supplier => supplier.id === row.supplier_id);
+  return supplier ? supplier.supplier_name : 'No asignado';
 }
+
+
+
 
 
 const validate = async ()=>{
@@ -209,14 +212,18 @@ const getSupplier= ref([])
 
 const getSupplierMethod = async ()=>{
   const url= 'http://127.0.0.1:8000/api/supplier/get'
-  axios.get(url)
+  try{
+    axios.get(url)
   .then(function(response){
     getSupplier.value = response.data.result
-    console.log(response);
+    console.log(getSupplier.value);
   })
 .catch(function(error){
     console.error(error)
   })
+  }catch(error){
+    console.error(error)
+  }
 }
 
 const getInventoryById = async (id) =>{

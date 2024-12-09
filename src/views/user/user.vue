@@ -73,7 +73,7 @@ const openForm = async ()=>{
 const editTable = async (id)=>{
     openForm()
     getData.value = await getDataById(id)
-    isEdit.value = false
+    isEdit.value = true
 }
 
 const formatRolName = (row) => {
@@ -285,16 +285,15 @@ const updateUser = async ()=>{
 
     try{
         axios.put(url, updateInfo)
+        .then(function(response){
+            getUserFunction()
         showForm.value = false
         hideContent.value = true
-        getUserFunction()
         referenceF.value.clearFields()
         ElMessage({
             type: 'success',
             message: 'Se actualizó satisfactoriamente'
         })
-        .then(function(response){
-
             console.log(response);
         })
 
