@@ -15,12 +15,14 @@
             v-model:is-close="hideForm"
             :isEdit = "isEdit"
             @save="validations"
+            @update="validationsForUpdate"
             >
 
             <template #slotForm>
                 <dptForm 
                 ref="referenceF"
                 :getCountry="getCountryObject"
+                :dataValue="getData"
                 />
             </template>
 
@@ -31,7 +33,7 @@
                     <el-table-column :formatter="formatCountryName" label="Pais"/>
                     <el-table-column fixed="right" label="Operations">
                         <template #default="tableData">
-                            <el-button link type="primary" :icon="Edit" size="default" @click="editing"></el-button>
+                            <el-button link type="primary" :icon="Edit" size="default" @click="editing(tableData.row.id)"></el-button>
                             <el-button link type="danger" :icon="Delete" size="default" @click="deleteDepartment(tableData.row.id)"></el-button>
                         </template>
                     </el-table-column>
@@ -61,6 +63,7 @@ const hideForm = ref(true)
 const isEdit= ref(null)
 const referenceF = ref(null)
 
+const getData = ref ()
 
 const openForm = async () =>{
     showForm.value = true
@@ -68,13 +71,10 @@ const openForm = async () =>{
     isEdit.value = false
 }
 
-const editing = async () =>{
+const editing = async (id) =>{
     openForm()
+    getData.value = await getDptById(id)
     isEdit.value= true
-}
-
-const asdasd = ()=> {
-    alert('Borrado')
 }
 
 const formatCountryName = (row) => {
@@ -128,13 +128,6 @@ const createDpt = async () =>{
     }
 
 }
-const updateDpt = async () =>{
-    
-}
-
-const deleteDpt = async () =>{
-    
-}
 
 //trae data de los dpts
 const getDepartment = ref([])
@@ -161,6 +154,7 @@ try{
     console.error(error)
 }
 }
+
 
 
 //traer data de los paises
@@ -192,9 +186,9 @@ const deleteDepartment = async(id)=>{
     'Seguro que desea eliminar?',
     'Warning',
     {
-      confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar',
-      type: 'warning',
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        type: 'warning',
     }
   )
     .then(() => {
@@ -222,6 +216,67 @@ const deleteDepartment = async(id)=>{
       })
     })
 }
+
+const validationsForUpdate = async() =>{
+    const validationsRules = referenceF.value.runRules(referenceF.value.referenceForm)
+    if(validationsRules){
+    departmentUpdate()
+}
+}
+
+const getDptById = async (id)=>{
+
+    const url = 'http://127.0.0.1:8000/api/department/getDataById'
+
+    try{
+        const response = axios.get(url, {
+        params: {
+            id: id
+        }
+        })
+            return (await response).data.result
+    
+    }catch(error){
+        console.error(error)
+    }
+}
+
+
+const departmentUpdate = async ()=>{
+    const url = 'http://127.0.0.1:8000/api/department/update'
+
+    const updateInfo = {
+        id: getData.value[0].id,
+        name: referenceF.value.dataForm.name,
+        code: referenceF.value.dataForm.code,
+        country_id: referenceF.value.dataForm.country_id
+    }
+
+    try{
+        axios.put(url, updateInfo)
+
+        .then(function(response){
+        getDpt()
+        showForm.value = false
+        hideForm.value = true
+        referenceF.value.clearForm()
+        ElMessage({
+        message: `Se actualizó el departamento satisfactoriamente`,
+        type: 'success',
+        plain: false,
+        })
+        console.log(response);
+
+        })
+
+        .catch(function(error){
+            console.error(error);
+        })
+    }catch(error){
+        console.error(error);
+    }
+}
+
 onMounted(() =>{
     getCountry()
     getDpt()

@@ -14,12 +14,13 @@
         v-model:is-close="hideForm"
         :is-edit="isEdit"
         @save="validateForm"
+        @update="validationsForUpdate"
         >
             <template #slotForm>
                 <el-row :gutter="20">
                     <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
                 <!-- solo es el formulario de country -->
-                <rolForm v-model:is-open="showForm" ref="referenceForm" :array="getDataOfTheMethod"  />
+                <rolForm v-model:is-open="showForm" ref="referenceForm" :array="getDataOfTheMethod" :dataValue="getDataObject"  />
                     </el-col>
                 </el-row>
             </template>
@@ -30,7 +31,7 @@
                 <el-table-column prop="name" label="Nombre" />
     <el-table-column fixed="right" label="Operaciones">
         <template #default="dataTable">
-        <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable">
+        <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable(dataTable.row.id)">
         </el-button>
         <el-button link type="danger" :icon="Delete" size="default" @click="deleteRol(dataTable.row.id)"></el-button>
     </template>
@@ -57,6 +58,8 @@ const referenceForm = ref(null)
 
 const isEdit = ref(null);
 
+const getDataObject = ref()
+
 const openForm = () => {
     showForm.value = true;
     hideForm.value = false;
@@ -73,8 +76,9 @@ const openForm = () => {
 const resetButton = ref(true);
 
 
-const editDataTable=  async() => {
+const editDataTable=  async(id) => {
     openForm();
+    getDataObject.value = await getDataById(id)
     isEdit.value = true;
 
 
@@ -125,11 +129,6 @@ const createRol = async() =>{
   }catch(error){
     console.error('Error', error)
   }
-}
-
-const updateRol = async() =>{
-  console.log('se Actualizó el rol');
-
 }
 
 const deleteRol = async(id) =>{
@@ -198,7 +197,59 @@ const getData = async() =>{
 
 }
 
-console.log(getData());
+const getDataById = async (id)=>{
+
+  const url = 'http://127.0.0.1:8000/api/rol/getDataById'
+
+  try{
+
+    const response = axios.get(url, {params: {id: id}})
+
+    return (await response).data.result
+
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const validationsForUpdate = async ()=>{
+  const validate = await referenceForm.value.validateForm(referenceForm.value.formRef)
+
+  if(validate){
+    updateRol()
+  }
+}
+
+const updateRol = async ()=>{
+  const url = 'http://127.0.0.1:8000/api/rol/update'
+
+  const updateInfo = {
+    id: getDataObject.value[0].id,
+    name: referenceForm.value.dataForm.name
+  }
+
+  axios.put(url, updateInfo)
+
+  .then(function(response){
+    referenceForm.value.clearFormInputs()
+    showForm.value =false
+    hideForm.value =true
+    getData()
+    ElMessage({
+      type: 'success',
+      message: 'Se actualizó satisfactoriamente'
+    })
+    console.log(response);
+  })
+
+  .catch(function(error){
+    ElMessage({
+      type: 'warning',
+      message: 'No se actualizaron los datos'
+    })
+    console.error(error)
+  })
+}
 
 onMounted(()=>{ //ejecuta la funcion apenas se cargue el componente
   getData()

@@ -75,7 +75,7 @@
   </template>
   
   <script setup>
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, watch } from 'vue'
   
   
   const props= defineProps({
@@ -86,7 +86,8 @@
     city: {
       type: Array,
       required: true
-    }
+    },
+    dataValue : Object
   })
 
   const formSize = ref('large')
@@ -104,6 +105,21 @@
     rol_id: ''
     
   }) 
+
+  const inputDataForm = ()=>{
+    dataForm.name= props.dataValue[0]. name
+    dataForm.email= props.dataValue[0].email
+    dataForm.type_docment= props.dataValue[0].documentType
+    dataForm.identificationNumber= props.dataValue[0].identificationNumber
+    dataForm.phone= props.dataValue[0].phone
+    dataForm.type_phone= props.dataValue[0].type_phone
+    dataForm.city_id= props.dataValue[0].city_id
+    dataForm.address= props.dataValue[0].address
+    dataForm.neighborhood_name= props.dataValue[0].neighborhood_name
+    dataForm.rol_id= props.dataValue[0].rol_id
+
+}
+
   const typePhone = [
     {id: 1, name: 'Personal',},
     {id: 2, name: 'Empresarial',},
@@ -196,7 +212,13 @@
   }
   
   
-  
+  watch(
+    ()=>props.dataValue,
+    (newData)=>{
+      inputDataForm()
+    }
+  )
+
   defineExpose({dataForm, formRef,validateForm, clearFormInputs});
   </script>
   

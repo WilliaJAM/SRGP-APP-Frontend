@@ -22,8 +22,11 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
+const props = defineProps({
+  dataValue: Object
+})
 
 const formSize = ref('large')//tamaño del formulario
 const formRef = ref() //variable que almacena todas la variables del form
@@ -33,6 +36,9 @@ const dataForm = reactive({
 }) //almacena el valor ingresado y se guardar en el :model 
 
 
+const inputDataForm = ()=>{
+  dataForm.name = props.dataValue[0].name
+}
 
 const rulesValidation = reactive({
   name: [
@@ -65,7 +71,12 @@ const clearFormInputs= () =>{
   formRef.value.resetFields()
 }
 
-
+watch(
+  ()=> props.dataValue,
+  (newData)=>{
+    inputDataForm()
+  }
+)
 
 defineExpose({dataForm, formRef,validateForm, clearFormInputs});
 </script>

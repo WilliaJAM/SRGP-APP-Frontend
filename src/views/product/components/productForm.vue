@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
     inventory: {
@@ -73,7 +73,8 @@ const props = defineProps({
     category: {
         type: Array,
         required: true
-    }
+    },
+    dataValue: Object
 })
 const formZize = ref('default')
 const referenceForm = ref()
@@ -88,6 +89,17 @@ const dataForm = reactive({
     inventory_id: '' 
 
 })
+
+const inputDataForm = ()=>{
+dataForm.price = props.dataValue[0].price
+dataForm.image = props.dataValue[0].image
+dataForm.description = props.dataValue[0].description
+dataForm.dimensions = props.dataValue[0].dimensions
+dataForm.status = props.dataValue[0].status
+dataForm.id_product = props.dataValue[0].id_product
+dataForm.category_id = props.dataValue[0].category_id
+dataForm.inventory_id = props.dataValue[0].inventory_id
+}
 
 const disponibility = [
     {id:1 ,name: 'Disponible', value: true},
@@ -162,6 +174,13 @@ const runRules = async (reference) =>{
 const clearForm = async ()=>{
     referenceForm.value.resetFields()
 }
+
+watch(
+    ()=> props.dataValue,
+    ()=>{
+        inputDataForm()
+    }
+)
 
 defineExpose({clearForm, runRules, dataForm, referenceForm})
 </script>
