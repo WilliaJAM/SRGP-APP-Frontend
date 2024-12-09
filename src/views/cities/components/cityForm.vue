@@ -34,13 +34,14 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
     array: {
         type: Array,
         required: true
-    }
+    },
+    dataValue: Object
 })
 const formZize = ref('default')
 const referenceForm = ref()
@@ -50,6 +51,12 @@ const dataForm = reactive({
     department_id: '',
 
 })
+
+const inputDataForm = ()=>{
+    dataForm.name = props.dataValue[0].name
+    dataForm.code = props.dataValue[0].code
+    dataForm.department_id = props.dataValue[0].department_id
+}
 
 const rules =reactive({
     name:[
@@ -89,6 +96,13 @@ const runRules = async (reference) =>{
 const clearForm = async ()=>{
     referenceForm.value.resetFields()
 }
+
+watch(
+    ()=> props.dataValue,
+    (newData)=>{
+        inputDataForm()
+    }
+)
 
 defineExpose({
     clearForm,

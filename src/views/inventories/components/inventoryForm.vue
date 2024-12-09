@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
   array: {
@@ -71,6 +71,14 @@ const dataForm = reactive({
   supplier_id: ''
 
 })
+
+const inputDataForm = ()=>{
+  dataForm.name = props.dataValue[0].name
+  dataForm.cuantityInStock = props.dataValue[0].quantity_in_stock
+  dataForm.departureDate = props.dataValue[0].departure_date
+  dataForm.dateOfEntry = props.dataValue[0].date_of_entry
+  dataForm.supplier_id = props.dataValue[0].supplier_id
+}
 
 const rules =reactive({
   name:[
@@ -108,6 +116,13 @@ const runRules = async (reference) =>{
 const clearForm = async ()=>{
   referenceForm.value.resetFields()
 }
+
+watch(
+  ()=> props.dataValue,
+  (newData)=>{
+    inputDataForm()
+  }
+)
 
 defineExpose({referenceForm,dataForm, runRules, clearForm})
 </script>

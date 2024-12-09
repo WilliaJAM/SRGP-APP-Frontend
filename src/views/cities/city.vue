@@ -16,9 +16,13 @@
             v-model:is-close = "hideForm"
             :isEdit="isEdit"
             @save="validations"
+            @update="validationsForUpdate"
             >
                 <template #slotForm>
-                    <cityForm ref="referenceF" :array="getDepartment"/>
+                    <cityForm ref="referenceF" 
+                    :array="getDepartment"
+                    :dataValue="getData"
+                    />
                 </template>
             </Forms>
             <el-table :data="getCity" style="width: 100%" v-show="hideForm">
@@ -27,7 +31,7 @@
     <el-table-column :formatter="formatDptName" label="Departementos" />
     <el-table-column fixed="right" label="Operaciones">
       <template #default="tableData">
-        <el-button link type="primary" :icon="Edit" size="default" @click="editTable"> </el-button>
+        <el-button link type="primary" :icon="Edit" size="default" @click="editTable(tableData.row.id)"> </el-button>
         <el-button link type="danger" :icon="Delete" size="default" @click="deleteCity(tableData.row.id)"></el-button>
       </template>
     </el-table-column>
@@ -51,10 +55,14 @@ import axios from 'axios';
 import { ElMessage, formatter,ElMessageBox } from 'element-plus';
 
 
+
 const openForm = ref(false);
 const hideForm = ref(true);
 const isEdit = ref(null);
+
 const referenceF = ref(null)
+
+const getData = ref()
 
 const isVisble = async () =>{
     openForm.value = true
@@ -62,8 +70,9 @@ const isVisble = async () =>{
     isEdit.value = false
 }
 
-const editTable =async () =>{
+const editTable =async (id) =>{
     isVisble()
+    getData.value = await getCityById(id)
     isEdit.value= true
 }
 
@@ -197,6 +206,61 @@ const deleteCity = async (id)=>{
         message: 'Operación cancelada',
       })
     })
+}
+
+
+const getCityById = async(id)=>{
+  const url = 'http://127.0.0.1:8000/api/city/getDataById'
+
+  try{
+    const response = axios.get(url, {params: {id: id}})
+
+    return (await response).data.result
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const validationsForUpdate = async ()=>{
+  const validations = await referenceF.value.runRules(referenceF.value.referenceForm)
+
+  if (validations) {
+    updateCity()
+  }
+}
+
+const updateCity = async()=>{
+  const url = 'http://127.0.0.1:8000/api/city/update'
+
+  const dataUpdate = {
+    id: getData.value[0].id,
+    name: referenceF.value.dataForm.name,
+    code: referenceF.value.dataForm.code,
+    department_id: referenceF.value.dataForm.department_id
+  }
+
+  try{
+    axios.put(url, dataUpdate)
+
+    .then(function(response){
+      getCities()
+      openForm.value = false
+      hideForm.value = true
+    
+      referenceF.value.clearForm(referenceF.value.referenceForm)
+      ElMessage({
+        type: 'success',
+        message: 'Se actualizó satisfactoriamente'
+      })
+      console.log(response);
+    })
+
+    .catch(function(error){
+      console.error(error)
+    })
+  }catch(error){
+
+  }
 }
 
 onMounted(()=>{

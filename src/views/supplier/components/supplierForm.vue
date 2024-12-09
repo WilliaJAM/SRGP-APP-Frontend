@@ -50,13 +50,14 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
     array: {
         type: Array,
         required: true
-    }
+    },
+    dataValue: Object
 })
 const formZize = ref('default')
 const referenceForm = ref()
@@ -69,6 +70,15 @@ const dataForm = reactive({
     city_id: ''
 
 })
+
+const inputDataForm = ()=>{
+    dataForm.supplier_name= props.dataValue[0].supplier_name
+    dataForm.email= props.dataValue[0].email
+    dataForm.phone= props.dataValue[0].phone
+    dataForm.type_phone= props.dataValue[0].type_phone
+    dataForm.address= props.dataValue[0].address
+    dataForm.city_id= props.dataValue[0].city_id
+}
 
 const typePhone = [
     {id: 1 , label: 'Personal',value:'Personal'},
@@ -114,6 +124,13 @@ const runRules = async (reference) =>{
 const clearForm = async()=>{
     referenceForm.value.resetFields()
 }
+
+watch(
+    ()=> props.dataValue,
+    (newData)=>{
+        inputDataForm()
+    }
+)
 
 defineExpose({clearForm, runRules,dataForm,referenceForm })
 </script>

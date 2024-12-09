@@ -107,7 +107,7 @@
 </template>
   
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
     city: {
@@ -141,6 +141,26 @@ const dataForm = reactive({
     address:'',
     city_id:''
 })
+
+const inputDataForm = ()=>{
+    dataForm.name = props.dataValue[0].name
+    dataForm.last_name = props.dataValue[0].last_name
+    dataForm.image = props.dataValue[0].image
+    dataForm.cedula = props.dataValue[0].cedula
+    dataForm.birthdate = props.dataValue[0].birthdate
+    dataForm.password = props.dataValue[0].password
+    dataForm.gender = props.dataValue[0].gender
+    dataForm.registration_date = props.dataValue[0].registration_date
+    dataForm.account_status = props.dataValue[0].account_status
+    dataForm.email = props.dataValue[0].email
+    dataForm.user_id = props.dataValue[0].user_id
+    dataForm.rol_id = props.dataValue[0].rol_id
+    dataForm.typePhone = props.dataValue[0].type_phone
+    dataForm.numberPhone = props.dataValue[0].phone
+    dataForm.neighborhoodName = props.dataValue[0].neighborhood_name
+    dataForm.address = props.dataValue[0].address
+    dataForm.city_id = props.dataValue[0].city_id
+}
 
 const option =[
     {id:1 ,name: "Activo", value: true},
@@ -271,6 +291,13 @@ const runRules = async (reference) =>{
 const clearFields= async ()=>{
     referenceForm.value.resetFields()
 }
+
+watch(
+    ()=> props.dataValue,
+    (newData)=>{
+        inputDataForm()
+    }
+)
 
 defineExpose({clearFields, runRules, dataForm, referenceForm})
 

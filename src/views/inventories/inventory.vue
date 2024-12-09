@@ -8,11 +8,12 @@
             v-show="hideForm"
             />
           <Forms
-          :titleForm="'Paises'"
+          :titleForm="'inventario'"
           v-model:is-open="showForm"
           v-model:is-close="hideForm"
           :is-edit="isEdit"
-          @save="createInventory"
+          @save="validate"
+          @update="validationsForUpdate"
           >
             <template #slotForm>
               <el-row :gutter="20">
@@ -37,7 +38,7 @@
               <el-table-column :formatter="formatSupplierName" label="Proveedor"/>
               <el-table-column fixed="right" label="Operaciones">
       <template #default="dataTable">
-        <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable()"></el-button>
+        <el-button link type="primary" :icon="Edit" size="default" @click="editDataTable(dataTable.row.id)"></el-button>
         <el-button link type="danger" :icon="Delete" size="default" @click="deleteInventory(dataTable.row.id)" ></el-button>
       </template>
     </el-table-column>
@@ -67,7 +68,7 @@ const showForm = ref(false);
 const hideForm = ref(true);
 const referenceF = ref(null)
 
-const getData = ref([])
+const getData = ref()
 
 const isEdit = ref(null);
 
@@ -81,16 +82,19 @@ const openForm = () => {
 
 const editDataTable=  async(id) => {
     openForm();
-    getInventoryById(id);
+    getData.value = await getInventoryById(id);
     isEdit.value = true;
 
 
 };
 
 const formatSupplierName = (row) => {
-    const supplier = getSupplier.value.find(supplier =>supplier.id === row.supplier_id);
-    return supplier ? supplier.name : 'No asignado'; 
+  const supplier = getSupplier.value.find(supplier => supplier.id === row.supplier_id);
+  return supplier ? supplier.supplier_name : 'No asignado';
 }
+
+
+
 
 
 const validate = async ()=>{
@@ -161,28 +165,7 @@ try{
 
 }
 
-//actualiza y edita la informacion
-const updateInventory = async () =>{
-  
-}
 
-const getInventoryById = async (id) =>{
-  // const url = ''
-
-  try{
-    axios.get(url, {data: {id}}) //obtiene los datos por id
-  .then(function(response){
-    console.log(response);
-  })
-
-
-  .catch(function(error){
-    console.error(error)
-  })
-  }catch(error){
-  console.error('se encontro un error',error)
-  }
-}
 //elimina los datos de la tabla por medio del id
 const deleteInventory = async (id) =>{
   
@@ -229,14 +212,79 @@ const getSupplier= ref([])
 
 const getSupplierMethod = async ()=>{
   const url= 'http://127.0.0.1:8000/api/supplier/get'
-  axios.get(url)
+  try{
+    axios.get(url)
   .then(function(response){
     getSupplier.value = response.data.result
-    console.log(response);
+    console.log(getSupplier.value);
   })
 .catch(function(error){
     console.error(error)
   })
+  }catch(error){
+    console.error(error)
+  }
+}
+
+const getInventoryById = async (id) =>{
+  const url = 'http://127.0.0.1:8000/api/invetory/getDataById'
+
+  try{
+    const response= axios.get(url, {params: {id: id}}) //obtiene los datos por id
+    
+    return (await response).data.result
+
+  }catch(error){
+  console.error('se encontro un error',error)
+  }
+}
+
+const validationsForUpdate = async ()=>{
+
+  const validations = referenceF.value.runRules()
+  
+  if(validations){
+    updateInventory()
+  }
+}
+
+const updateInventory = async ()=>{
+  const url = 'http://127.0.0.1:8000/api/invetory/update'
+
+  const updateInfo = {
+    id: getData.value[0].id,
+    name: referenceF.value.dataForm.name,
+    quantity_in_stock: referenceF.value.dataForm.cuantityInStock,
+    departure_date: referenceF.value.dataForm.departureDate,
+    date_of_entry: referenceF.value.dataForm.dateOfEntry,
+    supplier_id: referenceF.value.dataForm.supplier_id,
+}
+
+  try{
+    axios.put(url, updateInfo)
+
+    .then(function(response){
+      showForm.value = false;
+      hideForm.value =true;
+      getIventoryMethod()
+      referenceF.value.clearForm()
+      ElMessage({
+        type: 'success',
+        message: 'Se actualizó satisfactoriamente'
+      })
+      console.log(response);
+    })
+
+    .catch(function(error){
+      ElMessage({
+        type: 'warning',
+        message: 'No se actualizarón los datos'
+      })
+      console.error(error)
+    })
+  }catch(error){
+    console.error(error)
+  }
 }
 
 onMounted(()=>{

@@ -14,9 +14,10 @@
             :isEdit="isEdit"
             :titleForm="'Producto'"
             @save="validation"
+            @update="validationsForUpdate"
             >
                 <template #slotForm>
-                    <productForm ref="referenceF" :inventory="getInventory" :category="getCategory"/>
+                    <productForm ref="referenceF" :inventory="getInventory" :category="getCategory" :dataValue="getData"/>
                 </template>                
             </Forms>
                 <el-card v-show="hideContent" v-for="item in getProduct" style="max-width: 100%; margin-bottom: 10px;">
@@ -38,7 +39,7 @@
                         <div style="display: flex;justify-content: space-between; padding-top: 10px; padding-bottom: 10px;" >
                             Precio: ${{item.price}}
                             <div class="actionsButtons"> 
-                                <el-button link type="primary" size="default" :icon="Edit" @click="editTable()"></el-button>
+                                <el-button link type="primary" size="default" :icon="Edit" @click="editTbale(item.id)"></el-button>
                             <el-button link type="danger" size="default" :icon="Delete" @click="deleteProduct(item.id)"></el-button>
                             </div>
                         </div>
@@ -66,7 +67,10 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 const openForm= ref(false)
 const hideContent= ref(true)
 const isEdit= ref(null)
+
 const referenceF = ref(null)
+
+const getData = ref()
 
 const findInventoryName = (inventoryId) => {
   const inventory = getInventory.value.find(item => item.id === inventoryId);
@@ -92,8 +96,9 @@ const showForm = async () =>{
     isEdit.value = false
 }
 
-const editTbale = async () =>{
+const editTbale = async (id) =>{
     showForm()
+    getData.value = await getDataById(id)
     isEdit.value = true
 }
 
@@ -246,6 +251,69 @@ try{
 }catch(error){
     console.error(error)
 }
+}
+
+const getDataById = async(id)=>{
+    const url = 'http://127.0.0.1:8000/api/product/getDataById'
+
+    try{
+        const response = axios.get(url, {params: {id: id}})
+
+        return (await response).data.result
+
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const validationsForUpdate = async ()=>{
+    const validate = await referenceF.value.runRules(referenceF.value.referenceForm)
+
+    if(validate){
+        updateProduct()
+    }
+}
+
+const updateProduct = async ()=>{
+
+    const url = 'http://127.0.0.1:8000/api/product/update'
+
+    const updateInfo = {
+        id: getData.value[0].id,
+        price: referenceF.value.dataForm.price,
+        image: referenceF.value.dataForm.image,
+        description: referenceF.value.dataForm.description,
+        dimensions: referenceF.value.dataForm.dimensions,
+        status: referenceF.value.dataForm.status,
+        id_product:referenceF.value.dataForm.id_product ,
+        inventory_id: referenceF.value.dataForm.inventory_id,
+        category_id: referenceF.value.dataForm.category_id,
+    }
+
+    try{
+        axios.put(url, updateInfo)
+        .then(function(response){
+            openForm.value = false
+        hideContent.value = true
+        getProductMethod()
+        referenceF.value.clearForm()
+        ElMessage({
+            type: 'success',
+            message: 'Se actualizó satisfactoriamente'
+        })
+            console.log(response);
+        })
+
+        .catch(function(error){
+            ElMessage({
+            type: 'warning',
+            message: 'No se actualizaron los datos'
+        })
+            console.error(error)
+        })
+    }catch(error){
+        console.error(error)
+    }
 }
 
 onMounted(()=>{

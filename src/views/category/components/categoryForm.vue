@@ -22,14 +22,23 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 
+const props = defineProps({
+    dataValue: Object
+})
 
 const formRef= ref()
 const formSize = ref('default')
 const dataForm = reactive({ 
     name: ''
 })
+
+
+const putDataInForm = ()=>{
+    dataForm.name = props.dataValue[0].name
+}
+
 
 const rulesValidation = reactive({ 
     name:[
@@ -57,6 +66,12 @@ const clearFileds = async ()=>{
     formRef.value.resetFields()
 }
 
+watch(
+    ()=>props.dataValue,
+    (newData)=>{
+        putDataInForm()
+    }
+)
 
 defineExpose({clearFileds, runRules, dataForm,formRef })
 </script>

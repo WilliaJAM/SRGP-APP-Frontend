@@ -15,9 +15,10 @@
             :isEdit="isEdit"
             :titleForm="'usuarios'"
             @save="validations"
+            @update="validationsForUpdate"
             >
                 <template #slotForm>
-                    <userForm ref="referenceF" :city="getCity" :rol="getRolArray"/>
+                    <userForm ref="referenceF" :city="getCity" :rol="getRolArray" :dataValue="getData"/>
                 </template>
             </Forms>
 
@@ -33,7 +34,7 @@
                 <el-table-column prop="email" label="Email" />
                 <el-table-column fixed="right" label="Operaciones" >
                         <template #default="dataTable">
-                            <el-button link type="primary" size="default" :icon="Edit" @click="editTable()"></el-button>
+                            <el-button link type="primary" size="default" :icon="Edit" @click="editTable(dataTable.row.id)"></el-button>
                             <el-button link type="danger" size="default" :icon="Delete" @click="deleteUser(dataTable.row.id)"></el-button>
                         </template>
                     </el-table-column>
@@ -58,7 +59,10 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 const showForm = ref(false)
 const hideContent = ref(true)
 const isEdit = ref(null)
+
 const referenceF = ref(null)
+
+const getData = ref()
 
 const openForm = async ()=>{
     showForm.value = true
@@ -66,9 +70,10 @@ const openForm = async ()=>{
     isEdit.value = false
 }
 
-const editTable = async ()=>{
+const editTable = async (id)=>{
     openForm()
-    isEdit.value = false
+    getData.value = await getDataById(id)
+    isEdit.value = true
 }
 
 const formatRolName = (row) => {
@@ -231,6 +236,76 @@ const getRol = async ()=>{
     })
     }catch(error){
         console.error(error)
+    }
+}
+
+const getDataById = async (id)=>{
+    const url = 'http://127.0.0.1:8000/api/user/getDataById'
+
+    try{
+        const response = axios.get(url, {params: {id: id}})
+
+        return (await response).data.result
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const validationsForUpdate = async ()=>{
+    const validate = await referenceF.value.runRules(referenceF.value.referenceForm)
+
+    if(validate){
+        updateUser()
+    }
+}
+
+const updateUser = async ()=>{
+    const url = 'http://127.0.0.1:8000/api/user/update'
+
+    const updateInfo = {
+        id: getData.value[0].id,
+        name: referenceF.value.dataForm.name,
+        last_name: referenceF.value.dataForm.last_name,
+        image: referenceF.value.dataForm.image,
+        cedula: referenceF.value.dataForm.cedula,
+        birthdate: referenceF.value.dataForm.birthdate,
+        password: referenceF.value.dataForm.password,
+        gender: referenceF.value.dataForm.gender,
+        registration_date: referenceF.value.dataForm.registration_date,
+        account_status: referenceF.value.dataForm.account_status,
+        email: referenceF.value.dataForm.email,
+        user_id: referenceF.value.dataForm.user_id,
+        rol_id: referenceF.value.dataForm.rol_id,
+        type_phone: referenceF.value.dataForm.typePhone,
+        phone: referenceF.value.dataForm.numberPhone,
+        neighborhood_name: referenceF.value.dataForm.neighborhoodName,
+        address: referenceF.value.dataForm.address,
+        city_id: referenceF.value.dataForm.city_id,
+    }
+
+    try{
+        axios.put(url, updateInfo)
+        .then(function(response){
+            getUserFunction()
+        showForm.value = false
+        hideContent.value = true
+        referenceF.value.clearFields()
+        ElMessage({
+            type: 'success',
+            message: 'Se actualizó satisfactoriamente'
+        })
+            console.log(response);
+        })
+
+        .catch(function(error){
+        ElMessage({
+            type: 'warning',
+            message: 'No se actualizaron los datos'
+        })
+            console.error(error)
+        })
+    }catch(error){
+
     }
 }
 

@@ -15,9 +15,14 @@
             :isEdit = "isEdit"
             :titleForm="'Clientes'"
             @save="validate"
+            @update="validationsForUpdate"
             >
                 <template #slotForm>
-                    <customerForm ref="referenceF" :city="getCities" :rol="getRol"/>
+                    <customerForm ref="referenceF" 
+                    :city="getCities" 
+                    :rol="getRol"
+                    :dataValue="getData"
+                    />
                 </template>
             </Forms>
 
@@ -28,12 +33,12 @@
                     <el-table-column :formatter="formatCustomerName" label="Tipo" width="140"/>
                     <el-table-column prop="email" label="Email" width="140"/>
                     <el-table-column prop="phone" label="Telefono" width="140"/>
-                    <el-table-column prop="city_id" label="Ciudad" width="140"/>
+                    <el-table-column :formatter="formatCityName" label="Ciudad" width="140"/>
                     <el-table-column prop="neighborhood_name" label="Barrio" width="140"/>
                     <el-table-column prop="address" label="Direccion" width="140"/>
                     <el-table-column fixed="right" label="Operaciones" width="140">
                         <template #default="dataTable">
-                            <el-button link type="primary" size="default" :icon="Edit" @click="editDataTable()"></el-button>
+                            <el-button link type="primary" size="default" :icon="Edit" @click="editTable(dataTable.row.id)"></el-button>
                             <el-button link type="danger" size="default" :icon="Delete" @click="deleteUser(dataTable.row.id)"></el-button>
                         </template>
                     </el-table-column>
@@ -57,7 +62,10 @@ Delete
 const showForm = ref(false)
 const hideContent = ref(true)
 const isEdit = ref(null)
+
 const referenceF = ref(null)
+
+const getData = ref()
 
 const openForm = async () =>{
     showForm.value = true
@@ -66,14 +74,20 @@ isEdit.value = false
 
 }
 
-const editTable = async () =>{
+const editTable = async (id) =>{
     openForm()
-isEdit.value = true
+    getData.value = await getCustomerById(id)
+    isEdit.value = true
 
 }
 const formatCustomerName = (row) => {
     const rol = getRol.value.find(rol => rol.id === row.rol_id);
     return rol ? rol.name : 'No asignado'; 
+}
+
+const formatCityName = (row) => {
+    const city = getCities.value.find(item => item.id === row.city_id);
+    return city ? city.name : 'No asignado'; 
 }
 
 const validate = async ()=>{
@@ -231,6 +245,71 @@ try{
 }
 }
 
+const getCustomerById = async (id)=>{
+    const url = 'http://127.0.0.1:8000/api/customer/getDataById'
+
+    try{
+        const response = axios.get(url, {params: {id: id}}) 
+
+        return (await response).data.result
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const validationsForUpdate = async ()=>{
+    
+    const validation = await referenceF.value.validateForm(referenceF.value.formRef)
+
+    if(validation){
+        updateCustomer()
+    }
+}
+
+
+
+const updateCustomer = async ()=>{
+    const url = 'http://127.0.0.1:8000/api/customer/update'
+    const updateInfo = {
+    id: getData.value[0].id,
+    name: referenceF.value.dataForm.name,
+    email: referenceF.value.dataForm.email,
+    documentType: referenceF.value.dataForm.type_docment,
+    identificationNumber: referenceF.value.dataForm.identificationNumber,
+    phone: referenceF.value.dataForm.phone,
+    type_phone: referenceF.value.dataForm.type_phone,
+    city_id: referenceF.value.dataForm.city_id,
+    address: referenceF.value.dataForm.address,
+    neighborhood_name: referenceF.value.dataForm.neighborhood_name,
+    rol_id: referenceF.value.dataForm.rol_id
+    }
+    try{
+        axios.put(url, updateInfo)
+
+        .then(function(response){
+            getCustomerMethod()
+            showForm.value = false
+            hideContent.value =  true
+            referenceF.value.clearFormInputs()
+            ElMessage({
+                type: 'success',
+                message: 'Se actualizó satisfactoriamente'
+            })
+            console.log(response);
+        })
+
+        .catch(function(error){
+            ElMessage({
+                type: 'warning',
+                message: 'No se actualizarón los datos'
+            })
+            console.error(error)
+        })
+    }catch(error){
+        console.error(error)
+    }
+
+}
 onMounted(()=>{
     getCity()
     getRolMethod()
