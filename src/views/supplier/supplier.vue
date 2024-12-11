@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/LayoutMain.vue';
+import LayoutMain from '../../components/layoutMain.vue';
 import Header from '../../components/Header.vue'
 import Forms from '../../components/Forms.vue'
 import supplierForm from './components/supplierForm.vue'

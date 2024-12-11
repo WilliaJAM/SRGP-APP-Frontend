@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/LayoutMain.vue';
+import LayoutMain from '../../components/layoutMain.vue';
 import cityForm from './components/cityForm.vue'
 import Forms from '../../components/Forms.vue';
 import Header from '../../components/Header.vue';

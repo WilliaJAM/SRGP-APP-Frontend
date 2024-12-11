@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import LayoutMain from '../components/LayoutMain.vue';
+import LayoutMain from '../components/layoutMain.vue';
 import inventory from '../views/inventories/inventory.vue';
 import countries from '../views/countries/country.vue';
 import cities from '../views/cities/city.vue';

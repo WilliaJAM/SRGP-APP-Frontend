@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/LayoutMain.vue';
+import LayoutMain from '../../components/layoutMain.vue';
 import Forms from '../../components/Forms.vue';
 import countryForm from './components/countryForm.vue';
 import Header from '../../components/Header.vue';
