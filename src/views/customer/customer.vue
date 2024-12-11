@@ -71,7 +71,6 @@ const openForm = async () =>{
     showForm.value = true
 hideContent.value =  false
 isEdit.value = false
-
 }
 
 const editTable = async (id) =>{
