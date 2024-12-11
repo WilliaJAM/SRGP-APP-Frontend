@@ -5,7 +5,7 @@ import NavBar from './NavBar.vue';
 
 
 <template>
-    <el-container style="height:100vh;">
+    <el-container>
         <el-header>
                 <NavBar class="navbar"/>
         </el-header>
@@ -27,11 +27,12 @@ import NavBar from './NavBar.vue';
     .el-header{
         padding: 0;
     }
+
     .el-container{
         height: 100vh;
-    }
+    } 
 
     .main-cotent{
         position: relative;
-    }
+    } 
 </style>

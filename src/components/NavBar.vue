@@ -50,12 +50,11 @@
     margin-right: auto;
 }
 
-.avatarUser{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 10px;
+.el-menu-demo{
+  padding: 0;
 }
+
+
 
 .items{
 

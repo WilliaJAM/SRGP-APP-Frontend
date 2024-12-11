@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/LayoutMain.vue';
+import LayoutMain from '../../components/layoutMain.vue';
 import DynamicTitle from '../../components/DynamicTitle.vue';
 </script>
 
