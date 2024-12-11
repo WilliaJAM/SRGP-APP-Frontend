@@ -47,7 +47,7 @@
     </LayoutMain>
 </template>
 <script setup>
-import LayoutMain from '../../components/layoutMain.vue';
+import LayoutMain from '../../components/LayoutMain.vue';
 import Header from '../../components/Header.vue';
 import Forms from '../../components/Forms.vue';
 import customerForm from './components/customerForm.vue'
