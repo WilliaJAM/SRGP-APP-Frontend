@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/layoutMain.vue';
+import LayoutMain from '../../components/LayoutMain.vue';
 import Header from '../../components/Header.vue';
 import productForm from './components/productForm.vue'
 import Forms from '../../components/Forms.vue';

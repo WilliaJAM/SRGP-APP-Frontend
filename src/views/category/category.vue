@@ -44,7 +44,7 @@
 import axios from 'axios';
 import Forms from '../../components/Forms.vue';
 import Header from '../../components/Header.vue';
-import LayoutMain from '../../components/layoutMain.vue';
+import LayoutMain from '../../components/LayoutMain.vue';
 import categoryForm from './components/categoryForm.vue'
 import {
 Edit,

@@ -45,7 +45,7 @@
 
 <script setup>
 import Forms from '../../components/Forms.vue';
-import LayoutMain from '../../components/layoutMain.vue';
+import LayoutMain from '../../components/LayoutMain.vue';
 import Header from '../../components/Header.vue';
 import dptForm from './components/dptForm.vue';
 import { ElMessage, ElMessageBox } from 'element-plus'
