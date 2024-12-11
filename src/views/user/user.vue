@@ -23,7 +23,6 @@
             </Forms>
 
             <el-table :data="getUser" style="width: 100%" v-show="hideContent">
-                <el-table-column prop="image" label="Foto" />
                 <el-table-column prop="name" label="Nombres"  />
                 <el-table-column prop="last_name" label="Apellidos" />
                 <el-table-column prop="cedula" label="Numero de identificación" />
@@ -44,7 +43,7 @@
 </template>
 
 <script setup>
-import LayoutMain from '../../components/layoutMain.vue';
+import LayoutMain from '../../components/LayoutMain.vue';
 import Header from '../../components/Header.vue';
 import Forms from '../../components/Forms.vue';
 import userForm from './components/userForm.vue'
